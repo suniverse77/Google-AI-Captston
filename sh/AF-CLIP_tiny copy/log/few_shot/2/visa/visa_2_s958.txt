@@ -1,0 +1,26 @@
+[main.py][line:52][INFO] --------args----------
+[main.py][line:54][INFO] clip_download_dir: ./download/clip/
+[main.py][line:54][INFO] data_dir: /data
+[main.py][line:54][INFO] dataset: visa
+[main.py][line:54][INFO] model: ViT-L/14@336px
+[main.py][line:54][INFO] batch_size: 8
+[main.py][line:54][INFO] lr: 0.0001
+[main.py][line:54][INFO] alpha: 0.1
+[main.py][line:54][INFO] epochs: 2
+[main.py][line:54][INFO] prompt_len: 12
+[main.py][line:54][INFO] category: None
+[main.py][line:54][INFO] fewshot: 2
+[main.py][line:54][INFO] seed: 958
+[main.py][line:54][INFO] log_dir: ./log/few_shot/2/visa
+[main.py][line:54][INFO] suffix: defect
+[main.py][line:54][INFO] img_size: 518
+[main.py][line:54][INFO] feature_layers: [6, 12, 18, 24]
+[main.py][line:54][INFO] test_dataset: ['mvtec']
+[main.py][line:54][INFO] weight: ./weight
+[main.py][line:54][INFO] vis: 0
+[main.py][line:54][INFO] vis_dir: ./vis_results/
+[main.py][line:54][INFO] memory_layers: [6, 12, 18, 24]
+[main.py][line:54][INFO] lambda1: 1
+[main.py][line:54][INFO] lambda2: 1
+[main.py][line:55][INFO] --------args----------
+
