@@ -1,14 +1,8 @@
 # train for zero-shot model
-data_dir=/data2/fqq
+data_dir=./data
 
 CUDA_VISIBLE_DEVICES=0 python main.py \
- --model "ViT-L/14@336px"\
+ --model "ViT-L/14@336px" \
  --log_dir ./train_log \
  --dataset mvtec \
- --data_dir $data_dir
-
-CUDA_VISIBLE_DEVICES=0 python main.py \
- --log_dir ./train_log \
- --dataset visa \
- --test_dataset mvtec \
  --data_dir $data_dir

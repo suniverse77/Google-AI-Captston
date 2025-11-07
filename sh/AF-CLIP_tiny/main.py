@@ -129,8 +129,8 @@ def train(args):
     
     # 가중치 존재하는 경우
     if args.weight is not None:
-        clip_model.state_prompt_embedding = torch.load(os.path.join(args.weight, "{}_prompt.pt".format(args.dataset)))
-        clip_model.adaptor = torch.load(os.path.join(args.weight, "{}_adaptor.pt".format(args.dataset)))
+        clip_model.state_prompt_embedding = torch.load(os.path.join(args.weight, "{}_prompt.pt".format(args.dataset)), map_location=torch.device('cpu'), weights_only=False)
+        clip_model.adaptor = torch.load(os.path.join(args.weight, "{}_adaptor.pt".format(args.dataset)), map_location=torch.device('cpu'), weights_only=False)
     # 가중치 없는 경우 → 어댑터, 프롬프트 파인튜닝
     else:
         optimizer = torch.optim.Adam(clip_model.get_trainable_parameters(), lr=args.lr, betas=(0.5, 0.999))

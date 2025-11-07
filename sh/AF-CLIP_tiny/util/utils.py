@@ -180,7 +180,10 @@ def compute_pro(masks: ndarray, amaps: ndarray, num_th: int = 200) -> None:
         fp_pixels = np.logical_and(inverse_masks, binary_amaps).sum()
         fpr = fp_pixels / inverse_masks.sum()
 
-        df = df.append({"pro": mean(pros), "fpr": fpr, "threshold": th}, ignore_index=True)
+        # df = df.append({"pro": mean(pros), "fpr": fpr, "threshold": th}, ignore_index=True)
+        new_row = pd.DataFrame([{"pro": mean(pros), "fpr": fpr, "threshold": th}])
+        # pd.concat을 사용하여 기존 DataFrame(df)과 새 행(new_row)을 합칩니다.
+        df = pd.concat([df, new_row], ignore_index=True)
 
     # Normalize FPR from 0 ~ 1 to 0 ~ 0.3
     df = df[df["fpr"] < 0.3]
