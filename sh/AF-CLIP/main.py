@@ -44,7 +44,6 @@ def focal_loss(inputs, targets, alpha=-1, gamma=4, reduction="mean"):
 def l1_loss(inputs, targets, reduction="mean"):
     return F.l1_loss(inputs, targets, reduction=reduction)
 
-
 def get_logger(filename, verbosity=1, name=None):
     level_dict = {0: logging.DEBUG, 1: logging.INFO, 2: logging.WARNING}
     formatter = logging.Formatter(
