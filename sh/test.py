@@ -1,15 +1,15 @@
-from PIL import Image
-import requests
+import torch
 
-from transformers import CLIPProcessor, CLIPModel, CLIPTextModel, CLIPVisionModel, AutoProcessor
+path_tiny = "AF-CLIP_tiny/weight/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M.pt"
+path_clip = "AF-CLIP/download/clip/ViT-L-14-336px.pt"
 
-checkpoint = "wkcn/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M"
+ckpt_tiny = torch.load(path_tiny, map_location="cpu")
+ckpt_clip = torch.load(path_clip, map_location="cpu", weights_only=False)
 
-model = CLIPModel.from_pretrained(checkpoint)
+model_weights = ckpt_tiny['state_dict']
 
-print(model.text_model)
-print("==========================================")
-print(model.vision_model)
+print(model_weights.keys())
+print("========================================")
+print(ckpt_clip.state_dict().keys())
 
-print("\n=============== 비전 모델 설정 ===============")
-print(model.config.vision_config)
+print(model_weights["_image_encoder.module.visual.class_embedding"].shape)

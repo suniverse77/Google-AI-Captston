@@ -2,8 +2,8 @@ import os
 import random
 import logging
 import argparse
-
 from tqdm import tqdm
+from collections import OrderedDict
 
 import numpy as np
 
@@ -75,9 +75,24 @@ def _transform(n_px):
     ])
 
 def load_model(path, device):
-    checkpoint = torch.load(path, map_location="cpu")
+    ckpt = torch.load(path, map_location="cpu")
 
-    print(checkpoint)
+    if 'state_dict' in ckpt:
+            checkpoint = ckpt['state_dict']
+    else:
+        checkpoint = ckpt
+
+    new_state_dict = OrderedDict()
+    for k, v in checkpoint.items():
+        new_k = k
+        if k.startswith('_image_encoder.module.'):
+            new_k = k.removeprefix('_image_encoder.module.')
+        elif k.startswith('_text_encoder.module.'):
+            new_k = k.removeprefix('_text_encoder.module.')
+        elif k.startswith('_logit_scale.module.'):
+            new_k = k.removeprefix('_logit_scale.module.')
+        
+        new_state_dict[new_k] = v
 
     vit = "visual.proj" in checkpoint
 
