@@ -1,11 +1,9 @@
 import torch
 
-path = "weight/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M.pt"
+path_tiny = "weight/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M.pt"
+path_af = ""
 
-checkpoint = torch.load(path, map_location="cpu")
-
-# 2. checkpoint의 최상위 키를 확인합니다. (이게 바로 'state_dict'가 나온 부분입니다)
-print("Checkpoint keys:", checkpoint.keys())
+checkpoint = torch.load(path_tiny, map_location="cpu")
 
 # 3. 실제 모델 가중치(state_dict)에 접근합니다.
 model_weights = checkpoint['state_dict']

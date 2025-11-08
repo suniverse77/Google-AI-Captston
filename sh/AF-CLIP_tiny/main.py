@@ -1,5 +1,4 @@
 import os
-import copy
 import random
 import logging
 import argparse
@@ -11,11 +10,20 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from torchvision import transforms
+from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize
 
 from dataset import *
 from util.utils import eval_all_class
 from util.loss_fn import focal_loss, l1_loss, patch_alignment_loss
 from clip.clip import load, tokenize, available_models
+
+from model.clip import CLIP
+from PIL import Image
+try:
+    from torchvision.transforms import InterpolationMode
+    BICUBIC = InterpolationMode.BICUBIC
+except ImportError:
+    BICUBIC = Image.BICUBIC
 
 
 def setup_seed(seed):
@@ -53,6 +61,71 @@ def print_args(logger, args):
     for k in list(vars(args).keys()):
         logger.info('{}: {}'.format(k, vars(args)[k]))
     logger.info('--------args----------\n')
+
+def _convert_image_to_rgb(image):
+    return image.convert("RGB")
+
+def _transform(n_px):
+    return Compose([
+        Resize(n_px, interpolation=BICUBIC),
+        CenterCrop(n_px),
+        _convert_image_to_rgb,
+        ToTensor(),
+        Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711)),
+    ])
+
+def load_model(path, device):
+    checkpoint = torch.load(path, map_location="cpu")
+
+    print(checkpoint)
+
+    vit = "visual.proj" in checkpoint
+
+    if vit:
+        vision_width = checkpoint["visual.conv1.weight"].shape[0]
+        vision_layers = len([k for k in checkpoint.keys() if k.startswith("visual.") and k.endswith(".attn.in_proj_weight")])
+        vision_patch_size = checkpoint["visual.conv1.weight"].shape[-1]
+        grid_size = round((checkpoint["visual.positional_embedding"].shape[0] - 1) ** 0.5)
+        image_resolution = vision_patch_size * grid_size
+    else:
+        counts: list = [len(set(k.split(".")[2] for k in checkpoint if k.startswith(f"visual.layer{b}"))) for b in [1, 2, 3, 4]]
+        vision_layers = tuple(counts)
+        vision_width = checkpoint["visual.layer1.0.conv1.weight"].shape[0]
+        output_width = round((checkpoint["visual.attnpool.positional_embedding"].shape[0] - 1) ** 0.5)
+        vision_patch_size = None
+        assert output_width ** 2 + 1 == checkpoint["visual.attnpool.positional_embedding"].shape[0]
+        image_resolution = output_width * 32
+
+    embed_dim = checkpoint["text_projection"].shape[1]
+    context_length = checkpoint["positional_embedding"].shape[0]
+    vocab_size = checkpoint["token_embedding.weight"].shape[0]
+    transformer_width = checkpoint["ln_final.weight"].shape[0]
+    transformer_heads = transformer_width // 64
+    transformer_layers = len(set(k.split(".")[2] for k in checkpoint if k.startswith("transformer.resblocks")))
+
+    model = CLIP(
+        embed_dim=embed_dim,
+        image_resolution=image_resolution,
+        vision_layers=vision_layers,
+        vision_width=vision_width,
+        vision_patch_size=vision_patch_size,
+        context_length=context_length,
+        vocab_size=vocab_size,
+        transformer_width=transformer_width,
+        transformer_heads=transformer_heads,
+        transformer_layers=transformer_layers
+    )
+
+    for key in ["input_resolution", "context_length", "vocab_size"]:
+        if key in checkpoint:
+            del checkpoint[key]
+
+    model.load_checkpoint(checkpoint)
+
+    if str(device) == "cpu":
+        model.float()
+
+    return model.eval(), _transform(model.visual.input_resolution)
     
 
 def train(args):
@@ -65,7 +138,7 @@ def train(args):
     logger = get_logger(os.path.join(args.log_dir, '{}_{}_s{}.txt'.format(args.dataset, args.fewshot, args.seed)))
     print_args(logger, args)
 
-    clip_model, clip_transform = load(name=args.model, jit = (not args.model in available_models()), device=device, download_root=args.clip_download_dir)
+    clip_model, clip_transform = load_model(path=args.model_weight, device=device)
 
     clip_transform.transforms[0] = transforms.Resize(size=(args.img_size, args.img_size), interpolation=transforms.InterpolationMode.BICUBIC)
     clip_transform.transforms[1] = transforms.CenterCrop(size=(args.img_size, args.img_size))
@@ -150,6 +223,7 @@ if __name__ == '__main__':
     parser.add_argument('--data_dir', type=str, default='./data', help='training dataset')
     parser.add_argument('--dataset', type=str, default='mvtec', help='training dataset', choices=['mvtec', 'visa'])
     parser.add_argument('--model', type=str, default="ViT-L/14@336px", help='model')
+    parser.add_argument('--model_weight', type=str, default="./weight/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M.pt", help='model')
     parser.add_argument('--batch_size', type=int, default=8, help='batch size')
     parser.add_argument('--lr', type=float, default=0.0001, help='learning rate')
     parser.add_argument('--alpha', type=float, default=0.1, help='label combination')
