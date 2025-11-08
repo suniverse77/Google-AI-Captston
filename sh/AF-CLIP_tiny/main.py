@@ -138,7 +138,7 @@ def load_model(path, device):
         if key in state_dict:
             del state_dict[key]
 
-    model.load_checkpoint(state_dict)
+    model.load_state_dict(state_dict)
 
     if str(device) == "cpu":
         model.float()
