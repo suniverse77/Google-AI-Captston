@@ -94,29 +94,32 @@ def load_model(path, device):
         
         new_state_dict[new_k] = v
 
-    vit = "visual.proj" in checkpoint
+    state_dict = new_state_dict
+
+    vit = "visual.proj" in state_dict
 
     if vit:
-        vision_width = checkpoint["visual.conv1.weight"].shape[0]
-        vision_layers = len([k for k in checkpoint.keys() if k.startswith("visual.") and k.endswith(".attn.in_proj_weight")])
-        vision_patch_size = checkpoint["visual.conv1.weight"].shape[-1]
-        grid_size = round((checkpoint["visual.positional_embedding"].shape[0] - 1) ** 0.5)
+        vision_width = state_dict["visual.conv1.weight"].shape[0]
+        vision_layers = len([k for k in state_dict.keys() if k.startswith("visual.") and k.endswith(".attn.in_proj_weight")])
+        vision_patch_size = state_dict["visual.conv1.weight"].shape[-1]
+        grid_size = round((state_dict["visual.positional_embedding"].shape[0] - 1) ** 0.5)
         image_resolution = vision_patch_size * grid_size
     else:
-        counts: list = [len(set(k.split(".")[2] for k in checkpoint if k.startswith(f"visual.layer{b}"))) for b in [1, 2, 3, 4]]
+        # ResNet 로직 (TinyCLIP은 ViT이므로 이 부분은 실행되지 않음)
+        counts: list = [len(set(k.split(".")[2] for k in state_dict if k.startswith(f"visual.layer{b}"))) for b in [1, 2, 3, 4]]
         vision_layers = tuple(counts)
-        vision_width = checkpoint["visual.layer1.0.conv1.weight"].shape[0]
-        output_width = round((checkpoint["visual.attnpool.positional_embedding"].shape[0] - 1) ** 0.5)
+        vision_width = state_dict["visual.layer1.0.conv1.weight"].shape[0]
+        output_width = round((state_dict["visual.attnpool.positional_embedding"].shape[0] - 1) ** 0.5)
         vision_patch_size = None
-        assert output_width ** 2 + 1 == checkpoint["visual.attnpool.positional_embedding"].shape[0]
+        assert output_width ** 2 + 1 == state_dict["visual.attnpool.positional_embedding"].shape[0]
         image_resolution = output_width * 32
 
-    embed_dim = checkpoint["text_projection"].shape[1]
-    context_length = checkpoint["positional_embedding"].shape[0]
-    vocab_size = checkpoint["token_embedding.weight"].shape[0]
-    transformer_width = checkpoint["ln_final.weight"].shape[0]
+    embed_dim = state_dict["text_projection"].shape[1]
+    context_length = state_dict["positional_embedding"].shape[0]
+    vocab_size = state_dict["token_embedding.weight"].shape[0]
+    transformer_width = state_dict["ln_final.weight"].shape[0]
     transformer_heads = transformer_width // 64
-    transformer_layers = len(set(k.split(".")[2] for k in checkpoint if k.startswith("transformer.resblocks")))
+    transformer_layers = len(set(k.split(".")[2] for k in state_dict if k.startswith("transformer.resblocks")))
 
     model = CLIP(
         embed_dim=embed_dim,
@@ -132,10 +135,10 @@ def load_model(path, device):
     )
 
     for key in ["input_resolution", "context_length", "vocab_size"]:
-        if key in checkpoint:
-            del checkpoint[key]
+        if key in state_dict:
+            del state_dict[key]
 
-    model.load_checkpoint(checkpoint)
+    model.load_checkpoint(state_dict)
 
     if str(device) == "cpu":
         model.float()
