@@ -18,7 +18,7 @@ from util.utils import eval_all_class
 from util.loss_fn import focal_loss, l1_loss, patch_alignment_loss
 
 from model.clip import CLIP
-from model.toknizer import tokenize
+from model.tokenizer import tokenize
 
 try:
     from torchvision.transforms import InterpolationMode
@@ -165,6 +165,7 @@ def train(args):
     logger = get_logger(os.path.join(args.log_dir, '{}_{}_s{}.txt'.format(args.dataset, args.fewshot, args.seed)))
     print_args(logger, args)
 
+    # =============================================================== #
     # TinyCLIP 모델 불러오기
     clip_model, clip_transform = load_model(path=args.clip_weight, device=device)
 
@@ -182,9 +183,11 @@ def train(args):
     
     clip_model = clip_model.to(device)
 
-    # 
+    # 기존 CLIP에 새로운 모듈 Adaptor와 Prompt를 삽입
     clip_model.insert(args=args, tokenizer=tokenize, device=device)
+    # =============================================================== #
 
+    # =============================================================== #
     test_dataset_mvtec = MVTecDataset(root=args.data_dir, train=False, category=None, transform=clip_transform, gt_target_transform=target_transform)
     test_dataset_visa = VisaDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
     
@@ -208,7 +211,9 @@ def train(args):
         train_dataset = test_dataset_visa
         
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
+    # =============================================================== #
     
+    '''현재 TinyCLIP과 Adaptor의 차원이 안맞아서 다시 학습해야함'''
     # Adaptor, Prompt 가중치가 존재하는 경우
     if args.weight is not None:
         clip_model.state_prompt_embedding = torch.load(
@@ -233,7 +238,9 @@ def train(args):
                 labels = labels.to(device)
                 imgs = imgs.to(device)
                 gts = gts.to(device)
+
                 predict_labels, predict_masks, img_tokens = clip_model.detect_forward_seg(imgs, args=args)
+                
                 gts = F.interpolate(gts, size=predict_masks[0].shape[-2:], mode='bilinear')
                 gts[gts < 0.5] = 0
                 gts[gts > 0.5] = 1

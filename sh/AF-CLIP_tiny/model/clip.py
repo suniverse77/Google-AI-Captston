@@ -111,16 +111,18 @@ class CLIP(nn.Module):
         return self.visual.conv1.weight.dtype
     
     def insert(self, args, tokenizer, device):
+        self.prompt_len = args.prompt_len
+
         self.normal_cls_prompt = f'without defect.'
         self.anomaly_cls_prompt = f'with defect.'
         self.state_prompt_tokens = tokenizer([self.normal_cls_prompt, self.anomaly_cls_prompt]).to(device)
 
-        self.device = device
-        self.prompt_len = args.prompt_len
+        # 학습 가능한 프롬프트
         self.state_prompt_embedding = nn.Parameter(torch.empty(1, args.prompt_len, self.token_embedding.weight.shape[-1]).to(device))
         nn.init.normal_(self.state_prompt_embedding, std=0.01)
         self.state_prompt_embedding.requires_grad_(True)
         
+        # Adaptor 모듈 생성
         self.adaptor =  Adaptor(inplanes=self.visual.proj.shape[0], outplanes=self.visual.proj.shape[0]).to(device)
         self.memorybank = None
         self.memory_backbone = None
@@ -195,7 +197,7 @@ class CLIP(nn.Module):
         b, l, c = img_tokens[0].size()
         self.memorybank = [torch.nn.functional.normalize(img_token[:, 1:], dim=-1).reshape(-1, c) for img_token in img_tokens]
         
-    
+    # 학습 때 이 부분 호출됨
     def detect_forward_seg(self, image, args):
         text_features = self.encode_state_prompt()
         text_features = torch.nn.functional.normalize(text_features, dim=-1)
@@ -212,6 +214,7 @@ class CLIP(nn.Module):
         b, l = predict_map.size()
         h = w = int(math.sqrt(l))
         predict_map = predict_map.reshape(b, 1, h, w)
+        
         return cls_label, predict_map, img_tokens
         
     
