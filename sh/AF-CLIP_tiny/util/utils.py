@@ -10,7 +10,7 @@ from numpy import ndarray
 from skimage import measure
 import pandas as pd
 from scipy.ndimage import gaussian_filter
-from clip.model import CLIP
+from model.clip import CLIP
 from torchvision import transforms
 import torch
 import numpy as np
@@ -23,7 +23,6 @@ from numpy import ndarray
 from statistics import mean
 import os
 from torchvision import transforms
-from clip.model import CLIP
 import copy
 from torchvision import models
 import math
