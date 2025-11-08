@@ -94,7 +94,6 @@ class Bottleneck(nn.Module):
         out = self.relu3(out)
         return out
 
-
 class AttentionPool2d(nn.Module):
     def __init__(self, spacial_dim: int, embed_dim: int, num_heads: int, output_dim: int = None):
         super().__init__()
@@ -129,7 +128,6 @@ class AttentionPool2d(nn.Module):
             need_weights=False
         )
         return x.squeeze(0)
-
 
 class ModifiedResNet(nn.Module):
     """
@@ -193,7 +191,6 @@ class ModifiedResNet(nn.Module):
 
         return x
 
-
 class LayerNorm(nn.LayerNorm):
     """Subclass torch's LayerNorm to handle fp16."""
 
@@ -202,11 +199,9 @@ class LayerNorm(nn.LayerNorm):
         ret = super().forward(x.type(torch.float32))
         return ret.type(orig_type)
 
-
 class QuickGELU(nn.Module):
     def forward(self, x: torch.Tensor):
         return x * torch.sigmoid(1.702 * x)
-
 
 class ResidualAttentionBlock(nn.Module):
     def __init__(self, d_model: int, n_head: int, attn_mask: torch.Tensor = None):
@@ -538,6 +533,7 @@ class CLIP(nn.Module):
         image_features = self.encode_image(image)
         if isinstance(image_features, (list, tuple)):
             image_features = image_features[0]
+
         text_features = self.encode_text(text)
         if isinstance(text_features, (list, tuple)):
             text_features = text_features[0]
