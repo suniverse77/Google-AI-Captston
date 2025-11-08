@@ -75,10 +75,12 @@ def _transform(n_px):
     ])
 
 def load_model(path, device):
+    # =============================================================== #
+    # 가중치 불러오기
     ckpt = torch.load(path, map_location="cpu")
 
     if 'state_dict' in ckpt:
-            checkpoint = ckpt['state_dict']
+        checkpoint = ckpt['state_dict']
     else:
         checkpoint = ckpt
 
@@ -95,37 +97,30 @@ def load_model(path, device):
         new_state_dict[new_k] = v
 
     state_dict = new_state_dict
+    # =============================================================== #
 
-    vit = "visual.proj" in state_dict
+    # 이미지 인코더 설정
+    vision_embed_dim = state_dict["visual.conv1.weight"].shape[0]
+    vision_layers = len([k for k in state_dict.keys() if k.startswith("visual.") and k.endswith(".attn.in_proj_weight")])
+    vision_patch_size = state_dict["visual.conv1.weight"].shape[-1]
+    grid_size = round((state_dict["visual.positional_embedding"].shape[0] - 1) ** 0.5)
+    image_resolution = vision_patch_size * grid_size
 
-    if vit:
-        vision_width = state_dict["visual.conv1.weight"].shape[0]
-        vision_layers = len([k for k in state_dict.keys() if k.startswith("visual.") and k.endswith(".attn.in_proj_weight")])
-        vision_patch_size = state_dict["visual.conv1.weight"].shape[-1]
-        grid_size = round((state_dict["visual.positional_embedding"].shape[0] - 1) ** 0.5)
-        image_resolution = vision_patch_size * grid_size
-    else:
-        # ResNet 로직 (TinyCLIP은 ViT이므로 이 부분은 실행되지 않음)
-        counts: list = [len(set(k.split(".")[2] for k in state_dict if k.startswith(f"visual.layer{b}"))) for b in [1, 2, 3, 4]]
-        vision_layers = tuple(counts)
-        vision_width = state_dict["visual.layer1.0.conv1.weight"].shape[0]
-        output_width = round((state_dict["visual.attnpool.positional_embedding"].shape[0] - 1) ** 0.5)
-        vision_patch_size = None
-        assert output_width ** 2 + 1 == state_dict["visual.attnpool.positional_embedding"].shape[0]
-        image_resolution = output_width * 32
-
+    # 텍스트 인코더 설정
     embed_dim = state_dict["text_projection"].shape[1]
     context_length = state_dict["positional_embedding"].shape[0]
     vocab_size = state_dict["token_embedding.weight"].shape[0]
     transformer_width = state_dict["ln_final.weight"].shape[0]
     transformer_heads = transformer_width // 64
     transformer_layers = len(set(k.split(".")[2] for k in state_dict if k.startswith("transformer.resblocks")))
+    print(vision_embed_dim, vision_layers, vision_patch_size, grid_size, image_resolution)
+    print(embed_dim, context_length, vocab_size, transformer_width, transformer_heads, transformer_layers)
 
     model = CLIP(
         embed_dim=embed_dim,
         image_resolution=image_resolution,
         vision_layers=vision_layers,
-        vision_width=vision_width,
+        vision_width=vision_embed_dim,
         vision_patch_size=vision_patch_size,
         context_length=context_length,
         vocab_size=vocab_size,
@@ -156,6 +151,7 @@ def train(args):
     logger = get_logger(os.path.join(args.log_dir, '{}_{}_s{}.txt'.format(args.dataset, args.fewshot, args.seed)))
     print_args(logger, args)
 
+    # TinyCLIP 모델 불러오기
     clip_model, clip_transform = load_model(path=args.model_weight, device=device)
 
     clip_transform.transforms[0] = transforms.Resize(size=(args.img_size, args.img_size), interpolation=transforms.InterpolationMode.BICUBIC)
@@ -237,11 +233,13 @@ def train(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Pytorch implemention of AF-CLIP')
     
-    parser.add_argument('--clip_download_dir', type=str, default='./download/clip/', help='training dataset')
+    parser.add_argument('--model_weight', type=str, default="./weight/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M.pt", help='model')
     parser.add_argument('--data_dir', type=str, default='./data', help='training dataset')
     parser.add_argument('--dataset', type=str, default='mvtec', help='training dataset', choices=['mvtec', 'visa'])
-    parser.add_argument('--model', type=str, default="ViT-L/14@336px", help='model')
-    parser.add_argument('--model_weight', type=str, default="./weight/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M.pt", help='model')
+    parser.add_argument('--log_dir', type=str, default='./log/', help='log dir')
+
+    parser.add_argument('--seed', type=int, default=122, help='seed')
+
     parser.add_argument('--batch_size', type=int, default=8, help='batch size')
     parser.add_argument('--lr', type=float, default=0.0001, help='learning rate')
     parser.add_argument('--alpha', type=float, default=0.1, help='label combination')
@@ -249,8 +247,6 @@ if __name__ == '__main__':
     parser.add_argument('--prompt_len', type=int, default=12, help='prompt length')
     parser.add_argument('--category', type=str, default=None, help='normal class')
     parser.add_argument('--fewshot', type=int, default=0, help='few shot num')
-    parser.add_argument('--seed', type=int, default=122, help='seed')
-    parser.add_argument('--log_dir', type=str, default='./log/', help='log dir')
     parser.add_argument('--suffix', type=str, default='defect', help='prompt suffix')
     parser.add_argument('--img_size', type=int, default=518)
     parser.add_argument('--feature_layers', nargs='+', type=int, default=[6, 12, 18, 24], help='choose vit layers to extract features')
@@ -258,7 +254,6 @@ if __name__ == '__main__':
     parser.add_argument('--weight', type=str, default=None, help='load weight path')
     parser.add_argument('--vis', type=int, default=0, help='visualization results')
     parser.add_argument('--vis_dir', type=str, default='./vis_results/', help='visualization results dir')
-    parser.add_argument('--memory_layers',  nargs='+', type=int, default=[6, 12, 18, 24], help='choose resnet layers to store and compare features')
     parser.add_argument('--lambda1', type=float, default=1, help='lambda1 for loss')
     parser.add_argument('--lambda2', type=float, default=1, help='lambda2 for loss')
     
