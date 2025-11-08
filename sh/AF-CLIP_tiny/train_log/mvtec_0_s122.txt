@@ -25,3 +25,4 @@
 [main.py][line:62][INFO] lambda2: 1
 [main.py][line:63][INFO] --------args----------
 
+[main.py][line:229][INFO] Epoch: 1/2, Loss: 0.193535
