@@ -23,57 +23,48 @@ def gaussian_kernel(size, sigma=2.0):
 
 
 class CLIP(nn.Module):
-    def __init__(self,
-                 embed_dim: int,
-                 # vision
-                 image_resolution: int,
-                 vision_layers: Union[Tuple[int, int, int, int], int],
-                 vision_width: int,
-                 vision_patch_size: int,
-                 # text
-                 context_length: int,
-                 vocab_size: int,
-                 transformer_width: int,
-                 transformer_heads: int,
-                 transformer_layers: int
-                 ):
+    def __init__(
+            self,
+            embed_dim: int,
+            # vision
+            vision_embed_dim: int,
+            vision_heads: int,
+            vision_layers: int,
+            image_resolution: int,
+            vision_patch_size: int,
+            # text
+            text_embed_dim: int,
+            transformer_heads: int,
+            transformer_layers: int,
+            context_length: int,
+            vocab_size: int,          
+    ):
         super().__init__()
 
         self.context_length = context_length
 
-        if isinstance(vision_layers, (tuple, list)):
-            vision_heads = vision_width * 32 // 64
-            self.visual = ModifiedResNet(
-                layers=vision_layers,
-                output_dim=embed_dim,
-                heads=vision_heads,
-                input_resolution=image_resolution,
-                width=vision_width
-            )
-        else:
-            vision_heads = vision_width // 64
-            self.visual = VisionTransformer(
-                input_resolution=image_resolution,
-                patch_size=vision_patch_size,
-                embed_dim=vision_width,
-                layers=vision_layers,
-                heads=vision_heads,
-                output_dim=embed_dim
-            )
+        self.visual = VisionTransformer(
+            input_resolution=image_resolution,
+            patch_size=vision_patch_size,
+            embed_dim=vision_embed_dim,
+            layers=vision_layers,
+            heads=vision_heads,
+            output_dim=embed_dim
+        )
 
         self.transformer = Transformer(
-            embed_dim=transformer_width,
+            embed_dim=text_embed_dim,
             layers=transformer_layers,
             heads=transformer_heads,
             attn_mask=self.build_attention_mask()
         )
 
         self.vocab_size = vocab_size
-        self.token_embedding = nn.Embedding(vocab_size, transformer_width)
-        self.positional_embedding = nn.Parameter(torch.empty(self.context_length, transformer_width))
-        self.ln_final = LayerNorm(transformer_width)
+        self.token_embedding = nn.Embedding(vocab_size, text_embed_dim)
+        self.positional_embedding = nn.Parameter(torch.empty(self.context_length, text_embed_dim))
+        self.ln_final = LayerNorm(text_embed_dim)
 
-        self.text_projection = nn.Parameter(torch.empty(transformer_width, embed_dim))
+        self.text_projection = nn.Parameter(torch.empty(text_embed_dim, embed_dim))
         self.logit_scale = nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
 
         self.initialize_parameters()
@@ -123,13 +114,12 @@ class CLIP(nn.Module):
         self.normal_cls_prompt = f'without defect.'
         self.anomaly_cls_prompt = f'with defect.'
         self.state_prompt_tokens = tokenizer([self.normal_cls_prompt, self.anomaly_cls_prompt]).to(device)
-        self.tokenizer = tokenizer
+
         self.device = device
         self.prompt_len = args.prompt_len
         self.state_prompt_embedding = nn.Parameter(torch.empty(1, args.prompt_len, self.token_embedding.weight.shape[-1]).to(device))
         nn.init.normal_(self.state_prompt_embedding, std=0.01)
         self.state_prompt_embedding.requires_grad_(True)
-        self.tokenizer = tokenizer
         
         self.adaptor =  Adaptor(inplanes=self.visual.proj.shape[0], outplanes=self.visual.proj.shape[0]).to(device)
         self.memorybank = None
@@ -270,5 +260,7 @@ class CLIP(nn.Module):
         logits_per_text = logits_per_image.t()
 
         # shape = [global_batch_size, global_batch_size]
+
         return logits_per_image, logits_per_text
+    
     
