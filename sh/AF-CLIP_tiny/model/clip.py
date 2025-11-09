@@ -23,57 +23,48 @@ def gaussian_kernel(size, sigma=2.0):
 
 
 class CLIP(nn.Module):
-    def __init__(self,
-                 embed_dim: int,
-                 # vision
-                 image_resolution: int,
-                 vision_layers: Union[Tuple[int, int, int, int], int],
-                 vision_width: int,
-                 vision_patch_size: int,
-                 # text
-                 context_length: int,
-                 vocab_size: int,
-                 transformer_width: int,
-                 transformer_heads: int,
-                 transformer_layers: int
-                 ):
+    def __init__(
+            self,
+            embed_dim: int,
+            # vision
+            vision_embed_dim: int,
+            vision_heads: int,
+            vision_layers: int,
+            image_resolution: int,
+            vision_patch_size: int,
+            # text
+            text_embed_dim: int,
+            transformer_heads: int,
+            transformer_layers: int,
+            context_length: int,
+            vocab_size: int,          
+    ):
         super().__init__()
 
         self.context_length = context_length
 
-        if isinstance(vision_layers, (tuple, list)):
-            vision_heads = vision_width * 32 // 64
-            self.visual = ModifiedResNet(
-                layers=vision_layers,
-                output_dim=embed_dim,
-                heads=vision_heads,
-                input_resolution=image_resolution,
-                width=vision_width
-            )
-        else:
-            vision_heads = vision_width // 64
-            self.visual = VisionTransformer(
-                input_resolution=image_resolution,
-                patch_size=vision_patch_size,
-                width=vision_width,
-                layers=vision_layers,
-                heads=vision_heads,
-                output_dim=embed_dim
-            )
+        self.visual = VisionTransformer(
+            input_resolution=image_resolution,
+            patch_size=vision_patch_size,
+            embed_dim=vision_embed_dim,
+            layers=vision_layers,
+            heads=vision_heads,
+            output_dim=embed_dim
+        )
 
         self.transformer = Transformer(
-            width=transformer_width,
+            embed_dim=text_embed_dim,
             layers=transformer_layers,
             heads=transformer_heads,
             attn_mask=self.build_attention_mask()
         )
 
         self.vocab_size = vocab_size
-        self.token_embedding = nn.Embedding(vocab_size, transformer_width)
-        self.positional_embedding = nn.Parameter(torch.empty(self.context_length, transformer_width))
-        self.ln_final = LayerNorm(transformer_width)
+        self.token_embedding = nn.Embedding(vocab_size, text_embed_dim)
+        self.positional_embedding = nn.Parameter(torch.empty(self.context_length, text_embed_dim))
+        self.ln_final = LayerNorm(text_embed_dim)
 
-        self.text_projection = nn.Parameter(torch.empty(transformer_width, embed_dim))
+        self.text_projection = nn.Parameter(torch.empty(text_embed_dim, embed_dim))
         self.logit_scale = nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
 
         self.initialize_parameters()
@@ -95,9 +86,9 @@ class CLIP(nn.Module):
                     if name.endswith("bn3.weight"):
                         nn.init.zeros_(param)
 
-        proj_std = (self.transformer.width ** -0.5) * ((2 * self.transformer.layers) ** -0.5)
-        attn_std = self.transformer.width ** -0.5
-        fc_std = (2 * self.transformer.width) ** -0.5
+        proj_std = (self.transformer.embed_dim ** -0.5) * ((2 * self.transformer.layers) ** -0.5)
+        attn_std = self.transformer.embed_dim ** -0.5
+        fc_std = (2 * self.transformer.embed_dim) ** -0.5
         for block in self.transformer.resblocks:
             nn.init.normal_(block.attn.in_proj_weight, std=attn_std)
             nn.init.normal_(block.attn.out_proj.weight, std=proj_std)
@@ -105,7 +96,7 @@ class CLIP(nn.Module):
             nn.init.normal_(block.mlp.c_proj.weight, std=proj_std)
 
         if self.text_projection is not None:
-            nn.init.normal_(self.text_projection, std=self.transformer.width ** -0.5)
+            nn.init.normal_(self.text_projection, std=self.transformer.embed_dim ** -0.5)
 
     def build_attention_mask(self):
         # lazily create causal attention mask, with full attention between the vision tokens
@@ -120,17 +111,18 @@ class CLIP(nn.Module):
         return self.visual.conv1.weight.dtype
     
     def insert(self, args, tokenizer, device):
+        self.prompt_len = args.prompt_len
+
         self.normal_cls_prompt = f'without defect.'
         self.anomaly_cls_prompt = f'with defect.'
         self.state_prompt_tokens = tokenizer([self.normal_cls_prompt, self.anomaly_cls_prompt]).to(device)
-        self.tokenizer = tokenizer
-        self.device = device
-        self.prompt_len = args.prompt_len
+
+        # 학습 가능한 프롬프트
         self.state_prompt_embedding = nn.Parameter(torch.empty(1, args.prompt_len, self.token_embedding.weight.shape[-1]).to(device))
         nn.init.normal_(self.state_prompt_embedding, std=0.01)
         self.state_prompt_embedding.requires_grad_(True)
-        self.tokenizer = tokenizer
         
+        # Adaptor 모듈 생성
         self.adaptor =  Adaptor(inplanes=self.visual.proj.shape[0], outplanes=self.visual.proj.shape[0]).to(device)
         self.memorybank = None
         self.memory_backbone = None
@@ -205,7 +197,7 @@ class CLIP(nn.Module):
         b, l, c = img_tokens[0].size()
         self.memorybank = [torch.nn.functional.normalize(img_token[:, 1:], dim=-1).reshape(-1, c) for img_token in img_tokens]
         
-    
+    # 학습 때 이 부분 호출됨
     def detect_forward_seg(self, image, args):
         text_features = self.encode_state_prompt()
         text_features = torch.nn.functional.normalize(text_features, dim=-1)
@@ -222,6 +214,7 @@ class CLIP(nn.Module):
         b, l = predict_map.size()
         h = w = int(math.sqrt(l))
         predict_map = predict_map.reshape(b, 1, h, w)
+        
         return cls_label, predict_map, img_tokens
         
     
@@ -270,5 +263,7 @@ class CLIP(nn.Module):
         logits_per_text = logits_per_image.t()
 
         # shape = [global_batch_size, global_batch_size]
+
         return logits_per_image, logits_per_text
+    
     

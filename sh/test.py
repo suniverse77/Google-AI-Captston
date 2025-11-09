@@ -1,21 +1,15 @@
-from PIL import Image
-import requests
+import torch
 
-from transformers import CLIPProcessor, CLIPModel, CLIPTextModel, CLIPVisionModel, AutoProcessor
+path_tiny = "AF-CLIP_tiny/weight/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M.pt"
+path_clip = "AF-CLIP/download/clip/ViT-L-14-336px.pt"
 
-model_id = "wkcn/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M"
+ckpt_tiny = torch.load(path_tiny, map_location="cpu")
+ckpt_clip = torch.load(path_clip, map_location="cpu", weights_only=False)
 
-text_encoder = CLIPTextModel.from_pretrained(model_id)
-print(text_encoder)
+model_weights = ckpt_tiny['state_dict']
 
-model = CLIPModel.from_pretrained("wkcn/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M")
-processor = CLIPProcessor.from_pretrained("wkcn/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M")
+print(model_weights.keys())
+print("========================================")
+print(ckpt_clip.state_dict().keys())
 
-url = "http://images.cocodataset.org/val2017/000000039769.jpg"
-image = Image.open(requests.get(url, stream=True).raw)
-
-inputs = processor(text=["a photo of a cat", "a photo of a dog"], images=image, return_tensors="pt", padding=True)
-
-outputs = model(**inputs)
-logits_per_image = outputs.logits_per_image # this is the image-text similarity score
-probs = logits_per_image.softmax(dim=1) # we can take the softmax to get the label probabilities
+print(model_weights["_image_encoder.module.visual.class_embedding"].shape)
