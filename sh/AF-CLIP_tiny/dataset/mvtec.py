@@ -26,7 +26,6 @@ class MVTecDataset(Dataset):
         assert len(self.cur_img_paths) == len(self.cur_img_categories)
         assert len(self.cur_img_paths) == len(self.cur_gt_paths)
         self.dataset_name = "mvtec"
-       
         
     def preprocess(self):
         self.img_paths = {'train': {category : [] for category in self.categories}, 'test': {category : [] for category in self.categories}}

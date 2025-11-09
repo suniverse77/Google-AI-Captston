@@ -5,3 +5,4 @@ CUDA_VISIBLE_DEVICES=0 python main.py \
  --data_dir ./data \
  --dataset mvtec \
  --log_dir ./train_log \
+ --epochs 4
