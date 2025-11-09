@@ -4,28 +4,26 @@ import numpy as np
 from torch.utils.data import Dataset
 from PIL import Image
 import glob
-import random
 
 
-class MVTecDataset(Dataset):
-    def __init__(self, root, train=True, category=None, fewshot=0, transform=None, gt_target_transform=None):
-        super(MVTecDataset, self).__init__()
-        self.categories = ['carpet', 'grid', 'leather','tile',  'wood',
-                           'bottle', 'cable', 'capsule', 'hazelnut', 'metal_nut',
-                           'pill', 'screw', 'toothbrush', 'transistor', 'zipper']
-
+class DTDDataset(Dataset):
+    def __init__(self, root, train=True, category=None, transform=None, gt_target_transform=None):
+        super(DTDDataset, self).__init__()
+        self.categories = ['Blotchy_099', 'Fibrous_183', 'Marbled_078', 'Matted_069', 'Mesh_114', 
+                           'Perforated_037', 'Stratified_154', 
+                           'Woven_001', 'Woven_068', 'Woven_104', 'Woven_125', 'Woven_127']
         self.train = train
         self.category = category
-        self.fewshot = fewshot
-        self.root = os.path.join(root, 'mvtec')
+        self.root = os.path.join(root, 'DTD-Synthetic')
         self.transform = transform
         self.gt_target_transform = gt_target_transform
+        print("self.category: ", self.category)
         self.preprocess()  
         self.update(self.category)
         assert len(self.cur_img_paths) == len(self.cur_img_labels)
         assert len(self.cur_img_paths) == len(self.cur_img_categories)
         assert len(self.cur_img_paths) == len(self.cur_gt_paths)
-        self.dataset_name = "mvtec"
+        self.dataset_name = 'DTD'
        
         
     def preprocess(self):
@@ -40,7 +38,6 @@ class MVTecDataset(Dataset):
                 for defect_type in defect_types:
                     if defect_type == 'good':
                         img_paths = glob.glob(os.path.join(img_dir, phase, defect_type) + "/*.png")
-                        # img_paths.sort()
                         self.img_paths[phase][category].extend(img_paths)
                         self.gt_paths[phase][category].extend([None] * len(img_paths))
                         self.labels[phase][category].extend([0] * len(img_paths))
@@ -72,14 +69,6 @@ class MVTecDataset(Dataset):
                 self.cur_gt_paths.extend(self.gt_paths[phase][category])
                 self.cur_img_labels.extend(self.labels[phase][category])
                 self.cur_img_categories.extend([category] * len(self.img_paths[phase][category]))
-    
-        if self.train and self.fewshot != 0:
-          
-            randidx = np.random.choice(len(self.cur_img_paths), size=self.fewshot, replace=False)
-            self.cur_img_paths = [self.cur_img_paths[idx] for idx in randidx]
-            self.cur_gt_paths = [self.cur_gt_paths[idx] for idx in randidx]
-            self.cur_img_labels = [self.cur_img_labels[idx] for idx in randidx]
-            self.cur_img_categories = [self.cur_img_categories[idx] for idx in randidx]
     
     def __len__(self):
         return len(self.cur_img_paths)

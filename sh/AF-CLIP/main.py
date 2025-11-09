@@ -111,6 +111,18 @@ def train(args):
     clip_model = clip_model.to(device)
     clip_model.insert(args=args, tokenizer=tokenize, device=device)
 
+    total_params = 0
+    trainable_params = 0
+    
+    for param in clip_model.parameters():
+        total_params += param.numel()  # numel()이 파라미터의 총 개수를 반환
+        if param.requires_grad:
+            trainable_params += param.numel()
+            
+    print(f"  >> 총 파라미터 (Total Parameters): {total_params:,}")
+    print(f"  >> 학습 가능 파라미터 (Trainable): {trainable_params:,}")
+    print(f"  >> 고정된 파라미터 (Frozen): {(total_params - trainable_params):,}")
+
     test_dataset_mvtec = MVTecDataset(root=args.data_dir, train=False, category=None, transform=clip_transform, gt_target_transform=target_transform)
     test_dataset_isic = ISICDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
     test_dataset_clinic = ClinicDBDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)

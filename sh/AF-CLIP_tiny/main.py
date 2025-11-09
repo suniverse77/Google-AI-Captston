@@ -185,15 +185,45 @@ def train(args):
 
     # 기존 CLIP에 새로운 모듈 Adaptor와 Prompt를 삽입
     clip_model.insert(args=args, tokenizer=tokenize, device=device)
+
+    total_params = 0
+    trainable_params = 0
+    
+    for param in clip_model.parameters():
+        total_params += param.numel()  # numel()이 파라미터의 총 개수를 반환
+        if param.requires_grad:
+            trainable_params += param.numel()
+            
+    print(f"  >> 총 파라미터 (Total Parameters): {total_params:,}")
+    print(f"  >> 학습 가능 파라미터 (Trainable): {trainable_params:,}")
+    print(f"  >> 고정된 파라미터 (Frozen): {(total_params - trainable_params):,}")
     # =============================================================== #
 
     # =============================================================== #
     test_dataset_mvtec = MVTecDataset(root=args.data_dir, train=False, category=None, transform=clip_transform, gt_target_transform=target_transform)
+    test_dataset_isic = ISICDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
+    test_dataset_clinic = ClinicDBDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
+    test_dataset_colon = ColonDBDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
     test_dataset_visa = VisaDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
+    test_dataset_btad = BTADDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
+    test_dataset_dtd = DTDDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
+    test_dataset_brainmri = BrainMRIDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
+    test_dataset_br35h = Br35HDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
+    test_dataset_dagm = DAGMDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
+    test_dataset_kvasir = KvasirDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
     
     all_test_dataset_dict = {
         "mvtec": test_dataset_mvtec,
         "visa": test_dataset_visa,
+        "btad": test_dataset_btad,
+        "dtd": test_dataset_dtd,
+        'dagm': test_dataset_dagm,
+        "isic": test_dataset_isic,
+        "clinic": test_dataset_clinic,
+        "colon": test_dataset_colon,
+        "brainmri": test_dataset_brainmri,
+        "br35h": test_dataset_br35h,
+        'kvasir': test_dataset_kvasir,
     }
 
     if len(args.test_dataset) < 1:
@@ -202,6 +232,7 @@ def train(args):
         test_dataset_dict = {}
         for ds_name in args.test_dataset:
             test_dataset_dict[ds_name] = all_test_dataset_dict[ds_name]
+
     if args.dataset in test_dataset_dict:
         del test_dataset_dict[args.dataset]
 

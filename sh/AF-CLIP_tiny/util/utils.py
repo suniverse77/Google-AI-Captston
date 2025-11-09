@@ -298,4 +298,6 @@ def eval_all_class(clip_model: CLIP, dataset_name, test_dataset, args, logger, d
         average_res = cal_average_res(total_res)
         average_res_str = get_res_str(average_res)
         logger.info("Average: {}".format(average_res_str))
+
+
         
