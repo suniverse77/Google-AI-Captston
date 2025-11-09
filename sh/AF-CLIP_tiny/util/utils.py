@@ -1,33 +1,26 @@
+import os
+import copy
+from tqdm import tqdm
+
+import cv2
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from numpy import ndarray
+
 import torch
 import torch.nn.functional as F
 import torch.utils
 import torch.utils.data
-from tqdm import tqdm
+from torchvision import transforms, models
+
 from sklearn.metrics import auc, roc_auc_score, average_precision_score, precision_recall_curve
 from statistics import mean
-from numpy import ndarray
 from skimage import measure
-import pandas as pd
 from scipy.ndimage import gaussian_filter
 from model.clip import CLIP
-from torchvision import transforms
-import torch
-import numpy as np
-from dataset.mvtec import MVTecDataset
-import cv2
-from sklearn.metrics import auc
-from skimage import measure
-import pandas as pd
-from numpy import ndarray
+
 from statistics import mean
-import os
-from torchvision import transforms
-import copy
-from torchvision import models
-import math
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 def transform_invert(img_, transform_train):
     if 'Normalize' in str(transform_train):
