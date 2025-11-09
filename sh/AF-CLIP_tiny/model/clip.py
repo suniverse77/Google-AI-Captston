@@ -25,6 +25,7 @@ def gaussian_kernel(size, sigma=2.0):
 class CLIP(nn.Module):
     def __init__(
             self,
+            args,
             embed_dim: int,
             # vision
             vision_embed_dim: int,
@@ -41,6 +42,7 @@ class CLIP(nn.Module):
     ):
         super().__init__()
 
+        self.args = args
         self.context_length = context_length
 
         self.visual = VisionTransformer(
@@ -198,10 +200,10 @@ class CLIP(nn.Module):
         self.memorybank = [torch.nn.functional.normalize(img_token[:, 1:], dim=-1).reshape(-1, c) for img_token in img_tokens]
         
     # 학습 때 이 부분 호출됨
-    def detect_forward_seg(self, image, args):
+    def detect_forward_seg(self, image):
         text_features = self.encode_state_prompt()
         text_features = torch.nn.functional.normalize(text_features, dim=-1)
-        img_tokens = self.detect_encode_image(image, args)
+        img_tokens = self.detect_encode_image(image, self.args)
         scores = 0
         for img_token in img_tokens:
             img_token = torch.nn.functional.normalize(img_token, dim=-1)

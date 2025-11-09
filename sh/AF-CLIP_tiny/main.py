@@ -15,6 +15,7 @@ from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normal
 
 from dataset import *
 from util.utils import eval_all_class
+from util.calcul import calcul_params, calcul_flops
 from util.loss_fn import focal_loss, l1_loss, patch_alignment_loss
 
 from model.clip import CLIP
@@ -75,7 +76,7 @@ def _transform(n_px):
         Normalize((0.48145466, 0.4578275, 0.40821073), (0.26862954, 0.26130258, 0.27577711)),
     ])
 
-def load_model(path, device):
+def load_model(path, args, device):
     # =============================================================== #
     # 가중치 불러오기
     ckpt = torch.load(path, map_location="cpu")
@@ -128,10 +129,11 @@ def load_model(path, device):
     image_resolution = vision_patch_size * grid_size
 
     model = CLIP(
+        args=args,
         embed_dim=embed_dim,
         # vision
         vision_embed_dim=vision_embed_dim,
-        vision_heads = vision_heads, 
+        vision_heads=vision_heads, 
         vision_layers=vision_layers,
         image_resolution=image_resolution,
         vision_patch_size=vision_patch_size,
@@ -167,7 +169,7 @@ def train(args):
 
     # =============================================================== #
     # TinyCLIP 모델 불러오기
-    clip_model, clip_transform = load_model(path=args.clip_weight, device=device)
+    clip_model, clip_transform = load_model(path=args.clip_weight, args=args, device=device)
 
     clip_transform.transforms[0] = transforms.Resize(size=(args.img_size, args.img_size), interpolation=transforms.InterpolationMode.BICUBIC)
     clip_transform.transforms[1] = transforms.CenterCrop(size=(args.img_size, args.img_size))
@@ -186,17 +188,8 @@ def train(args):
     # 기존 CLIP에 새로운 모듈 Adaptor와 Prompt를 삽입
     clip_model.insert(args=args, tokenizer=tokenize, device=device)
 
-    total_params = 0
-    trainable_params = 0
-    
-    for param in clip_model.parameters():
-        total_params += param.numel()  # numel()이 파라미터의 총 개수를 반환
-        if param.requires_grad:
-            trainable_params += param.numel()
-            
-    print(f"  >> 총 파라미터 (Total Parameters): {total_params:,}")
-    print(f"  >> 학습 가능 파라미터 (Trainable): {trainable_params:,}")
-    print(f"  >> 고정된 파라미터 (Frozen): {(total_params - trainable_params):,}")
+    calcul_flops(model=clip_model, args=args)
+    calcul_params(model=clip_model)
     # =============================================================== #
 
     # =============================================================== #
@@ -244,16 +237,15 @@ def train(args):
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     # =============================================================== #
     
-    '''현재 TinyCLIP과 Adaptor의 차원이 안맞아서 다시 학습해야함'''
     # Adaptor, Prompt 가중치가 존재하는 경우
-    if args.weight is not None:
+    if args.weight_path is not None:
         clip_model.state_prompt_embedding = torch.load(
-            os.path.join(args.weight, "{}_prompt.pt".format(args.dataset)), 
+            os.path.join(args.weight_path, "{}_prompt.pt".format(args.dataset)), 
             map_location=torch.device('cpu'), 
             weights_only=False
         )
         clip_model.adaptor = torch.load(
-            os.path.join(args.weight, "{}_adaptor.pt".format(args.dataset)), 
+            os.path.join(args.weight_path, "{}_adaptor.pt".format(args.dataset)), 
             map_location=torch.device('cpu'), 
             weights_only=False
         )
@@ -270,7 +262,7 @@ def train(args):
                 imgs = imgs.to(device)
                 gts = gts.to(device)
 
-                predict_labels, predict_masks, img_tokens = clip_model.detect_forward_seg(imgs, args=args)
+                predict_labels, predict_masks, img_tokens = clip_model.detect_forward_seg(imgs)
                 
                 gts = F.interpolate(gts, size=predict_masks[0].shape[-2:], mode='bilinear')
                 gts[gts < 0.5] = 0
@@ -285,6 +277,17 @@ def train(args):
                 
             logger.info("Epoch: {}/{}, Loss: {:.6f}".format(epoch, args.epochs, np.mean(total_loss)))
 
+            # 가중치 저장
+            save_dir = args.weight_path
+            prompt_save_path = os.path.join(save_dir, "{}_prompt.pt".format(args.dataset))
+            torch.save(clip_model.state_prompt_embedding, prompt_save_path)
+            logger.info(f"Prompt weights saved to: {prompt_save_path}")
+
+            # 어댑터 가중치 저장
+            adaptor_save_path = os.path.join(save_dir, "{}_adaptor.pt".format(args.dataset))
+            torch.save(clip_model.adaptor, adaptor_save_path)
+            logger.info(f"Adaptor weights saved to: {adaptor_save_path}")
+
     for dataset_name, test_ds in test_dataset_dict.items():
         logger.info("---------------------------{}------------------------------".format(dataset_name))
         eval_all_class(clip_model, dataset_name, test_ds, args, logger, device)
@@ -295,7 +298,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Pytorch implemention of AF-CLIP')
     
     parser.add_argument('--clip_weight', type=str, default="./weight/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M.pt", help='model')
-    parser.add_argument('--weight', type=str, default=None, help='load weight path')
+    parser.add_argument('--weight_path', type=str, default=None, help='load weight path')
     parser.add_argument('--data_dir', type=str, default='./data', help='training dataset')
     parser.add_argument('--dataset', type=str, default='mvtec', help='training dataset', choices=['mvtec', 'visa'])
     parser.add_argument('--log_dir', type=str, default='./log/', help='log dir')
