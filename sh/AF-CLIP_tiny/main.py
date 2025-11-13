@@ -236,7 +236,7 @@ def train(args):
             logger.info("Epoch: {}/{}, Loss: {:.6f}".format(epoch, args.epochs, np.mean(total_loss)))
 
             # 가중치 저장
-            save_dir = './weight'
+            save_dir = args.weight_path
             prompt_save_path = os.path.join(save_dir, "{}_prompt.pt".format(args.dataset))
             torch.save(clip_model.state_prompt_embedding, prompt_save_path)
             logger.info(f"Prompt weights saved to: {prompt_save_path}")

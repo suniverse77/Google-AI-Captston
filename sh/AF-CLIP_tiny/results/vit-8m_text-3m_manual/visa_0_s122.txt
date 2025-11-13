@@ -1,0 +1,70 @@
+[main.py][line:62][INFO] --------args----------
+[main.py][line:64][INFO] clip_weight: ./weight/vit-8m_text-3m_manual/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M.pt
+[main.py][line:64][INFO] weight_path: None
+[main.py][line:64][INFO] data_dir: ./data
+[main.py][line:64][INFO] dataset: visa
+[main.py][line:64][INFO] dataset_list: ['mvtec', 'visa']
+[main.py][line:64][INFO] result_dir: ./results/vit-8m_text-3m_manual
+[main.py][line:64][INFO] seed: 122
+[main.py][line:64][INFO] img_size: 518
+[main.py][line:64][INFO] batch_size: 8
+[main.py][line:64][INFO] lr: 0.0001
+[main.py][line:64][INFO] alpha: 0.1
+[main.py][line:64][INFO] epochs: 8
+[main.py][line:64][INFO] prompt_len: 12
+[main.py][line:64][INFO] lambda1: 1
+[main.py][line:64][INFO] lambda2: 1
+[main.py][line:64][INFO] category: None
+[main.py][line:64][INFO] fewshot: 0
+[main.py][line:64][INFO] suffix: defect
+[main.py][line:64][INFO] feature_layers: [6, 12, 18, 24]
+[main.py][line:64][INFO] test_dataset: []
+[main.py][line:64][INFO] vis: 0
+[main.py][line:64][INFO] vis_dir: ./vis_results/
+[main.py][line:65][INFO] --------args----------
+
+[main.py][line:236][INFO] Epoch: 1/8, Loss: 0.104044
+[main.py][line:242][INFO] Prompt weights saved to: ./weight/visa_prompt.pt
+[main.py][line:247][INFO] Adaptor weights saved to: ./weight/visa_adaptor.pt
+[main.py][line:236][INFO] Epoch: 2/8, Loss: 0.060353
+[main.py][line:242][INFO] Prompt weights saved to: ./weight/visa_prompt.pt
+[main.py][line:247][INFO] Adaptor weights saved to: ./weight/visa_adaptor.pt
+[main.py][line:236][INFO] Epoch: 3/8, Loss: 0.054690
+[main.py][line:242][INFO] Prompt weights saved to: ./weight/visa_prompt.pt
+[main.py][line:247][INFO] Adaptor weights saved to: ./weight/visa_adaptor.pt
+[main.py][line:236][INFO] Epoch: 4/8, Loss: 0.049983
+[main.py][line:242][INFO] Prompt weights saved to: ./weight/visa_prompt.pt
+[main.py][line:247][INFO] Adaptor weights saved to: ./weight/visa_adaptor.pt
+[main.py][line:236][INFO] Epoch: 5/8, Loss: 0.045933
+[main.py][line:242][INFO] Prompt weights saved to: ./weight/visa_prompt.pt
+[main.py][line:247][INFO] Adaptor weights saved to: ./weight/visa_adaptor.pt
+[main.py][line:236][INFO] Epoch: 6/8, Loss: 0.042172
+[main.py][line:242][INFO] Prompt weights saved to: ./weight/visa_prompt.pt
+[main.py][line:247][INFO] Adaptor weights saved to: ./weight/visa_adaptor.pt
+[main.py][line:236][INFO] Epoch: 7/8, Loss: 0.040023
+[main.py][line:242][INFO] Prompt weights saved to: ./weight/visa_prompt.pt
+[main.py][line:247][INFO] Adaptor weights saved to: ./weight/visa_adaptor.pt
+[main.py][line:236][INFO] Epoch: 8/8, Loss: 0.036613
+[main.py][line:242][INFO] Prompt weights saved to: ./weight/visa_prompt.pt
+[main.py][line:247][INFO] Adaptor weights saved to: ./weight/visa_adaptor.pt
+[main.py][line:250][INFO] ---------------------------mvtec------------------------------
+[utils.py][line:272][INFO] Category	Sample_CLS_AUROC	Sample_CLS_AP	Sample_CLS_max-F1	Pixel_AUROC	Pixel_AP	Pixel_max-F1	Pixel_PRO
+[utils.py][line:302][INFO] carpet	0.791734	0.927089	0.893617	0.914276	0.444503	0.474783	0.735324
+[utils.py][line:302][INFO] grid	0.619048	0.842110	0.850746	0.605955	0.028974	0.079608	0.229022
+[utils.py][line:302][INFO] leather	0.990149	0.997049	0.989011	0.915755	0.473319	0.557925	0.878842
+[utils.py][line:302][INFO] tile	0.956710	0.983060	0.942529	0.809764	0.333041	0.372910	0.610336
+[utils.py][line:302][INFO] wood	0.871053	0.950544	0.944882	0.833243	0.348650	0.354395	0.632595
+[utils.py][line:302][INFO] bottle	0.961905	0.989042	0.945736	0.898523	0.537487	0.514508	0.767425
+[utils.py][line:302][INFO] cable	0.629873	0.769328	0.760331	0.661022	0.074207	0.158149	0.534732
+[utils.py][line:302][INFO] capsule	0.800160	0.952064	0.904564	0.900845	0.091918	0.123332	0.714728
+[utils.py][line:302][INFO] hazelnut	0.717500	0.838992	0.787500	0.936675	0.316132	0.380381	0.721634
+[utils.py][line:302][INFO] metal_nut	0.611437	0.894567	0.897561	0.627713	0.169307	0.301442	0.556331
+[utils.py][line:302][INFO] pill	0.637480	0.909788	0.915584	0.955003	0.511887	0.513088	0.789044
+[utils.py][line:302][INFO] screw	0.643370	0.844045	0.856115	0.959339	0.057901	0.106650	0.824276
+[utils.py][line:302][INFO] toothbrush	0.700000	0.865417	0.865672	0.882019	0.088185	0.148623	0.626787
+[utils.py][line:302][INFO] transistor	0.489167	0.446176	0.571429	0.772859	0.200120	0.267047	0.490878
+[utils.py][line:302][INFO] zipper	0.592174	0.873459	0.881481	0.781487	0.098137	0.134982	0.354840
+[utils.py][line:311][INFO] =============================================================
+[utils.py][line:312][INFO] Average	0.734117	0.872182	0.867117	0.830299	0.251585	0.299188	0.631120
+[utils.py][line:313][INFO] =============================================================
+[main.py][line:252][INFO] -------------------------------------------------------------

@@ -9,14 +9,14 @@
 # vis: 시각화 유무 (0이면 학습 및 평가 / 1이면 시각화)
 # 
 
-run_name='vit-61m_text-29m_manual'
+run_name='vit-8m_text-3m_manual'
 
 CUDA_VISIBLE_DEVICES=0 python main.py \
- --clip_weight ./weight/${run_name}/TinyCLIP-ViT-61M-32-Text-29M-LAION400M.pt \
+ --clip_weight ./weight/${run_name}/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M.pt \
  --data_dir ./data \
  --dataset visa \
  --dataset_list mvtec visa \
  --result_dir ./results/${run_name} \
- --epochs 4 \
+ --epochs 8 \
  --vis 0 \
 # --weight_path ./weight/${run_name}
