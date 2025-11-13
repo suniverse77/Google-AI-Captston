@@ -124,29 +124,11 @@ def train(args):
     print(f"  >> 고정된 파라미터 (Frozen): {(total_params - trainable_params):,}")
 
     test_dataset_mvtec = MVTecDataset(root=args.data_dir, train=False, category=None, transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_isic = ISICDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_clinic = ClinicDBDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_colon = ColonDBDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
     test_dataset_visa = VisaDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_btad = BTADDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_dtd = DTDDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_brainmri = BrainMRIDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_br35h = Br35HDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_dagm = DAGMDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_kvasir = KvasirDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
     
     all_test_dataset_dict = {
         "mvtec": test_dataset_mvtec,
         "visa": test_dataset_visa,
-        "btad": test_dataset_btad,
-        "dtd": test_dataset_dtd,
-        'dagm': test_dataset_dagm,
-        "isic": test_dataset_isic,
-        "clinic": test_dataset_clinic,
-        "colon": test_dataset_colon,
-        "brainmri": test_dataset_brainmri,
-        "br35h": test_dataset_br35h,
-        'kvasir': test_dataset_kvasir,
     }
     if len(args.test_dataset) < 1:
         test_dataset_dict = all_test_dataset_dict
@@ -165,8 +147,8 @@ def train(args):
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     
     if args.weight is not None:
-        clip_model.state_prompt_embedding = torch.load(os.path.join(args.weight, "{}_prompt.pt".format(args.dataset)))
-        clip_model.adaptor = torch.load(os.path.join(args.weight, "{}_adaptor.pt".format(args.dataset)))
+        clip_model.state_prompt_embedding = torch.load(os.path.join(args.weight, "{}_prompt.pt".format(args.dataset)), map_location=torch.device('cpu'), weights_only=False)
+        clip_model.adaptor = torch.load(os.path.join(args.weight, "{}_adaptor.pt".format(args.dataset)), map_location=torch.device('cpu'), weights_only=False)
     else:
         optimizer = torch.optim.Adam(clip_model.get_trainable_parameters(), lr=args.lr, betas=(0.5, 0.999))
        

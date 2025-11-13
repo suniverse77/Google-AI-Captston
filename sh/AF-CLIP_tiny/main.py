@@ -14,7 +14,7 @@ from torchvision import transforms
 from torchvision.transforms import Compose, Resize, CenterCrop, ToTensor, Normalize, InterpolationMode
 
 from dataset import *
-from util.utils import eval_all_class
+from util.utils import eval_all_class, load_dataset
 from util.calcul import calcul_params, calcul_flops
 from util.loss_fn import focal_loss, l1_loss, patch_alignment_loss
 
@@ -160,11 +160,11 @@ def load_model(path, args, device):
 def train(args):
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    if not os.path.exists(args.log_dir):
-        os.makedirs(args.log_dir)
+    if not os.path.exists(args.result_dir):
+        os.makedirs(args.result_dir)
 
     # log 저장
-    logger = get_logger(os.path.join(args.log_dir, '{}_{}_s{}.txt'.format(args.dataset, args.fewshot, args.seed)))
+    logger = get_logger(os.path.join(args.result_dir, '{}_{}_s{}.txt'.format(args.dataset, args.fewshot, args.seed)))
     print_args(logger, args)
 
     # =============================================================== #
@@ -192,50 +192,8 @@ def train(args):
     calcul_params(model=clip_model)
     # =============================================================== #
 
-    # =============================================================== #
-    test_dataset_mvtec = MVTecDataset(root=args.data_dir, train=False, category=None, transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_isic = ISICDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_clinic = ClinicDBDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_colon = ColonDBDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_visa = VisaDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_btad = BTADDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_dtd = DTDDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_brainmri = BrainMRIDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_br35h = Br35HDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_dagm = DAGMDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    test_dataset_kvasir = KvasirDataset(root=args.data_dir, train=False, category=None,transform=clip_transform, gt_target_transform=target_transform)
-    
-    all_test_dataset_dict = {
-        "mvtec": test_dataset_mvtec,
-        "visa": test_dataset_visa,
-        "btad": test_dataset_btad,
-        "dtd": test_dataset_dtd,
-        'dagm': test_dataset_dagm,
-        "isic": test_dataset_isic,
-        "clinic": test_dataset_clinic,
-        "colon": test_dataset_colon,
-        "brainmri": test_dataset_brainmri,
-        "br35h": test_dataset_br35h,
-        'kvasir': test_dataset_kvasir,
-    }
-
-    if len(args.test_dataset) < 1:
-        test_dataset_dict = all_test_dataset_dict
-    else:
-        test_dataset_dict = {}
-        for ds_name in args.test_dataset:
-            test_dataset_dict[ds_name] = all_test_dataset_dict[ds_name]
-
-    if args.dataset in test_dataset_dict:
-        del test_dataset_dict[args.dataset]
-
-    if args.dataset == 'mvtec':
-        train_dataset = test_dataset_mvtec
-    else:
-        train_dataset = test_dataset_visa
-        
+    train_dataset, test_dataset_dict = load_dataset(args, clip_transform, target_transform)
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
-    # =============================================================== #
     
     # Adaptor, Prompt 가중치가 존재하는 경우
     if args.weight_path is not None:
@@ -278,7 +236,7 @@ def train(args):
             logger.info("Epoch: {}/{}, Loss: {:.6f}".format(epoch, args.epochs, np.mean(total_loss)))
 
             # 가중치 저장
-            save_dir = args.weight_path
+            save_dir = './weight'
             prompt_save_path = os.path.join(save_dir, "{}_prompt.pt".format(args.dataset))
             torch.save(clip_model.state_prompt_embedding, prompt_save_path)
             logger.info(f"Prompt weights saved to: {prompt_save_path}")
@@ -301,25 +259,27 @@ if __name__ == '__main__':
     parser.add_argument('--weight_path', type=str, default=None, help='load weight path')
     parser.add_argument('--data_dir', type=str, default='./data', help='training dataset')
     parser.add_argument('--dataset', type=str, default='mvtec', help='training dataset', choices=['mvtec', 'visa'])
-    parser.add_argument('--log_dir', type=str, default='./log/', help='log dir')
+    parser.add_argument('--dataset_list', nargs='+', type=str, default='mvtec', help='dataset list')
+    parser.add_argument('--result_dir', type=str, default='./results/', help='dataset list')
 
     parser.add_argument('--seed', type=int, default=122, help='seed')
 
+    parser.add_argument('--img_size', type=int, default=518)
     parser.add_argument('--batch_size', type=int, default=8, help='batch size')
     parser.add_argument('--lr', type=float, default=0.0001, help='learning rate')
     parser.add_argument('--alpha', type=float, default=0.1, help='label combination')
     parser.add_argument('--epochs', type=int, default=2, help='training epoch')
     parser.add_argument('--prompt_len', type=int, default=12, help='prompt length')
+    parser.add_argument('--lambda1', type=float, default=1, help='lambda1 for loss')
+    parser.add_argument('--lambda2', type=float, default=1, help='lambda2 for loss')
     parser.add_argument('--category', type=str, default=None, help='normal class')
     parser.add_argument('--fewshot', type=int, default=0, help='few shot num')
     parser.add_argument('--suffix', type=str, default='defect', help='prompt suffix')
-    parser.add_argument('--img_size', type=int, default=518)
+
     parser.add_argument('--feature_layers', nargs='+', type=int, default=[6, 12, 18, 24], help='choose vit layers to extract features')
     parser.add_argument('--test_dataset', nargs='+', type=str, default=[], help='choose vit layers to extract features')
     parser.add_argument('--vis', type=int, default=0, help='visualization results')
     parser.add_argument('--vis_dir', type=str, default='./vis_results/', help='visualization results dir')
-    parser.add_argument('--lambda1', type=float, default=1, help='lambda1 for loss')
-    parser.add_argument('--lambda2', type=float, default=1, help='lambda2 for loss')
     
     args = parser.parse_args()
     

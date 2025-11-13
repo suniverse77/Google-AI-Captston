@@ -1,24 +1,40 @@
 [main.py][line:62][INFO] --------args----------
 [main.py][line:64][INFO] clip_weight: ./weight/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M.pt
-[main.py][line:64][INFO] weight: None
+[main.py][line:64][INFO] weight_path: ./weight
 [main.py][line:64][INFO] data_dir: ./data
 [main.py][line:64][INFO] dataset: mvtec
+[main.py][line:64][INFO] dataset_list: ['mvtec', 'visa']
 [main.py][line:64][INFO] log_dir: ./train_log
 [main.py][line:64][INFO] seed: 122
+[main.py][line:64][INFO] img_size: 518
 [main.py][line:64][INFO] batch_size: 8
 [main.py][line:64][INFO] lr: 0.0001
 [main.py][line:64][INFO] alpha: 0.1
 [main.py][line:64][INFO] epochs: 4
 [main.py][line:64][INFO] prompt_len: 12
+[main.py][line:64][INFO] lambda1: 1
+[main.py][line:64][INFO] lambda2: 1
 [main.py][line:64][INFO] category: None
 [main.py][line:64][INFO] fewshot: 0
 [main.py][line:64][INFO] suffix: defect
-[main.py][line:64][INFO] img_size: 518
 [main.py][line:64][INFO] feature_layers: [6, 12, 18, 24]
 [main.py][line:64][INFO] test_dataset: []
 [main.py][line:64][INFO] vis: 0
 [main.py][line:64][INFO] vis_dir: ./vis_results/
-[main.py][line:64][INFO] lambda1: 1
-[main.py][line:64][INFO] lambda2: 1
 [main.py][line:65][INFO] --------args----------
 
+[main.py][line:286][INFO] ---------------------------visa------------------------------
+[utils.py][line:291][INFO] Category candle: Sample_CLS_AUROC: 0.691500 Sample_CLS_AP: 0.714385 Sample_CLS_max-F1: 0.697674 Pixel_AUROC: 0.922629 Pixel_AP: 0.020032 Pixel_max-F1: 0.035528 Pixel_PRO: 0.745050 
+[utils.py][line:291][INFO] Category capsules: Sample_CLS_AUROC: 0.384667 Sample_CLS_AP: 0.599907 Sample_CLS_max-F1: 0.769231 Pixel_AUROC: 0.780035 Pixel_AP: 0.010244 Pixel_max-F1: 0.020280 Pixel_PRO: 0.383611 
+[utils.py][line:291][INFO] Category cashew: Sample_CLS_AUROC: 0.670400 Sample_CLS_AP: 0.824045 Sample_CLS_max-F1: 0.806584 Pixel_AUROC: 0.901671 Pixel_AP: 0.117285 Pixel_max-F1: 0.170077 Pixel_PRO: 0.812767 
+[utils.py][line:291][INFO] Category chewinggum: Sample_CLS_AUROC: 0.894200 Sample_CLS_AP: 0.949804 Sample_CLS_max-F1: 0.873786 Pixel_AUROC: 0.983154 Pixel_AP: 0.407496 Pixel_max-F1: 0.462718 Pixel_PRO: 0.765545 
+[utils.py][line:291][INFO] Category fryum: Sample_CLS_AUROC: 0.640200 Sample_CLS_AP: 0.818855 Sample_CLS_max-F1: 0.803213 Pixel_AUROC: 0.951736 Pixel_AP: 0.402321 Pixel_max-F1: 0.429746 Pixel_PRO: 0.849120 
+[utils.py][line:291][INFO] Category macaroni1: Sample_CLS_AUROC: 0.736100 Sample_CLS_AP: 0.706610 Sample_CLS_max-F1: 0.743083 Pixel_AUROC: 0.961244 Pixel_AP: 0.013503 Pixel_max-F1: 0.047746 Pixel_PRO: 0.876673 
+[utils.py][line:291][INFO] Category macaroni2: Sample_CLS_AUROC: 0.619600 Sample_CLS_AP: 0.601094 Sample_CLS_max-F1: 0.676157 Pixel_AUROC: 0.953039 Pixel_AP: 0.004846 Pixel_max-F1: 0.020132 Pixel_PRO: 0.808992 
+[utils.py][line:291][INFO] Category pcb1: Sample_CLS_AUROC: 0.480000 Sample_CLS_AP: 0.526850 Sample_CLS_max-F1: 0.666667 Pixel_AUROC: 0.901739 Pixel_AP: 0.062913 Pixel_max-F1: 0.118929 Pixel_PRO: 0.702676 
+[utils.py][line:291][INFO] Category pcb2: Sample_CLS_AUROC: 0.602000 Sample_CLS_AP: 0.592861 Sample_CLS_max-F1: 0.708487 Pixel_AUROC: 0.879424 Pixel_AP: 0.037328 Pixel_max-F1: 0.109378 Pixel_PRO: 0.657268 
+[utils.py][line:291][INFO] Category pcb3: Sample_CLS_AUROC: 0.537129 Sample_CLS_AP: 0.546901 Sample_CLS_max-F1: 0.664452 Pixel_AUROC: 0.869331 Pixel_AP: 0.043675 Pixel_max-F1: 0.075553 Pixel_PRO: 0.580450 
+[utils.py][line:291][INFO] Category pcb4: Sample_CLS_AUROC: 0.509406 Sample_CLS_AP: 0.515835 Sample_CLS_max-F1: 0.671186 Pixel_AUROC: 0.908062 Pixel_AP: 0.077963 Pixel_max-F1: 0.140189 Pixel_PRO: 0.689245 
+[utils.py][line:291][INFO] Category pipe_fryum: Sample_CLS_AUROC: 0.882600 Sample_CLS_AP: 0.941080 Sample_CLS_max-F1: 0.880383 Pixel_AUROC: 0.973436 Pixel_AP: 0.331713 Pixel_max-F1: 0.420197 Pixel_PRO: 0.895045 
+[utils.py][line:295][INFO] Average: Sample_CLS_AUROC: 0.637317 Sample_CLS_AP: 0.694852 Sample_CLS_max-F1: 0.746742 Pixel_AUROC: 0.915458 Pixel_AP: 0.127443 Pixel_max-F1: 0.170873 Pixel_PRO: 0.730537 
+[main.py][line:288][INFO] -------------------------------------------------------------

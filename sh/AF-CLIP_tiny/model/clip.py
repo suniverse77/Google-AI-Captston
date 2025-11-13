@@ -238,7 +238,7 @@ class CLIP(nn.Module):
     
     
     def detect_forward(self, image, args):
-        cls_label, predict_map, _= self.detect_forward_seg(image, args)
+        cls_label, predict_map, _= self.detect_forward_seg(image)
         if self.memorybank is not None:
             cls_label_memory, predict_map_memory = self.detect_forward_memorybank(image, args)
             predict_map = predict_map_memory + args.alpha * predict_map
