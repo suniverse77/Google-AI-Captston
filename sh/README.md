@@ -11,3 +11,7 @@
 ```docker commit {CONTAINER ID} afclip```
 
 ```sudo docker run -it --rm -v /mnt/c/Users/Ajou/Desktop/capston:/workspace afclip```
+
+## Training
+
+```sh train.sh```

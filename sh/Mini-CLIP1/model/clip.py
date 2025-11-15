@@ -26,6 +26,7 @@ class CLIP(nn.Module):
     def __init__(
             self,
             args,
+            device,
             embed_dim: int,
             # vision
             vision_embed_dim: int,
@@ -43,6 +44,7 @@ class CLIP(nn.Module):
         super().__init__()
 
         self.args = args
+        self.device = device
         self.context_length = context_length
 
         self.visual = VisionTransformer(
@@ -113,54 +115,41 @@ class CLIP(nn.Module):
         return self.visual.conv1.weight.dtype
     
     def insert(self, args, tokenizer, device):
-        self.prompt_len = args.prompt_len
-
-        self.normal_cls_prompt = f'without defect.'
-        self.anomaly_cls_prompt = f'with defect.'
-
-        # output: [[without defect.의 정수 ID 텐서], [with defect.의 정수 ID 텐서]]
-        # ex) without defect. → [355, 100, 235, 0, 0]
-        self.state_prompt_tokens = tokenizer([self.normal_cls_prompt, self.anomaly_cls_prompt]).to(device)
-
-        # 학습 가능한 프롬프트
-        self.state_prompt_embedding = nn.Parameter(torch.empty(1, args.prompt_len, self.token_embedding.weight.shape[-1]).to(device))
-        nn.init.normal_(self.state_prompt_embedding, std=0.01)
-        self.state_prompt_embedding.requires_grad_(True)
         
         # Adaptor 모듈 생성
         self.adaptor =  Adaptor(inplanes=self.visual.proj.shape[0], outplanes=self.visual.proj.shape[0]).to(device)
         self.memorybank = None
         self.memory_backbone = None
         self.gaussian_kernel = {'3': gaussian_kernel(size=3, sigma=4).to(device), '5': gaussian_kernel(size=5, sigma=4).to(device)}
-        
-    
-    def encode_state_prompt(self):
-        state_x = self.token_embedding(self.state_prompt_tokens).type(self.dtype)
-        state_x = torch.cat([self.state_prompt_embedding.repeat(2, 1, 1), state_x], dim=1)[:, :77, :]
-        state_x = state_x + self.positional_embedding.type(self.dtype)
-        state_x = state_x.permute(1, 0, 2)  # NLD -> LND
-        state_x = self.transformer(state_x)
-        state_x = state_x.permute(1, 0, 2)  # LND -> NLD
-        state_x = self.ln_final(state_x).type(self.dtype)
-        state_x = state_x[torch.arange(state_x.shape[0]), self.prompt_len + self.state_prompt_tokens.argmax(dim=-1)] @ self.text_projection
-        return state_x 
-    
     
     def get_trainable_parameters(self):
         return list([self.state_prompt_embedding]) + list(self.adaptor.parameters())
 
-    def encode_text(self, text):
-        x = self.token_embedding(text).type(self.dtype)  # [batch_size, n_ctx, d_model]
-        x = x + self.positional_embedding.type(self.dtype)
-        x = x.permute(1, 0, 2)  # NLD -> LND
-        x = self.transformer(x)
-        x = x.permute(1, 0, 2)  # LND -> NLD
-        x = self.ln_final(x).type(self.dtype)
-        x = x[torch.arange(x.shape[0]), text.argmax(dim=-1)] @ self.text_projection
-        return x
+    def encode_text(self, state_prompt_tokens, state_prompt_embedding):
+        prompt_len = self.args.prompt_len
+
+        # Learnable + Frozen
+        state_x = self.token_embedding(state_prompt_tokens).type(self.dtype)
+        state_x = torch.cat([state_prompt_embedding.repeat(2, 1, 1), state_x], dim=1)[:, :77, :]
+        # 
+        state_x = state_x + self.positional_embedding.type(self.dtype)
+        # NLD -> LND
+        state_x = state_x.permute(1, 0, 2)
+        state_x = self.transformer(state_x)
+        state_x = state_x.permute(1, 0, 2)  # LND -> NLD
+        state_x = self.ln_final(state_x).type(self.dtype)
+        state_x = state_x[torch.arange(state_x.shape[0]), prompt_len + state_prompt_tokens.argmax(dim=-1)] @ self.text_projection
+
+        return state_x 
     
-    def encode_image(self, image, feature_layers=None):
-        return self.visual(image.type(self.dtype), feature_layers)
+    def encode_image(self, image, feature_layers=None, use_aggregation=True):
+        if use_aggregation:
+            img_tokens = self.visual(image.type(self.dtype), self.args.feature_layers)
+            img_tokens = self.aggerate_neighbors(img_tokens)
+            img_tokens = [self.visual.ln_post(self.adaptor(img_token)) @ self.visual.proj for img_token in img_tokens]
+            return img_tokens
+        else:
+            return self.visual(image.type(self.dtype), feature_layers)
     
     def aggerate_neighbor(self, x, patchsize, stride=1):
         if patchsize == 1:
@@ -179,7 +168,6 @@ class CLIP(nn.Module):
         x = torch.cat([cls_token, x], dim=1)
         return x
     
-    
     def aggerate_neighbors(self, img_tokens):
         img_token_list = []
         for img_token in img_tokens:
@@ -187,40 +175,13 @@ class CLIP(nn.Module):
                 new_img_token = self.aggerate_neighbor(img_token, r)
                 img_token_list.append(new_img_token)
         return img_token_list
-    
-    
-    def detect_encode_image(self, image, args):
-        img_tokens = self.encode_image(image, args.feature_layers) 
-        img_tokens = self.aggerate_neighbors(img_tokens)
-        img_tokens = [self.visual.ln_post(self.adaptor(img_token)) @ self.visual.proj for img_token in img_tokens]
-        return img_tokens
-    
+
     
     def store_memory(self, image, args):
         img_tokens = self.encode_image(image, args.memory_layers)
         img_tokens = self.aggerate_neighbors(img_tokens)
         b, l, c = img_tokens[0].size()
         self.memorybank = [torch.nn.functional.normalize(img_token[:, 1:], dim=-1).reshape(-1, c) for img_token in img_tokens]
-        
-    # 학습 때 이 부분 호출됨
-    def detect_forward_seg(self, image):
-        text_features = self.encode_state_prompt()
-        text_features = torch.nn.functional.normalize(text_features, dim=-1)
-        img_tokens = self.detect_encode_image(image, self.args)
-        scores = 0
-        for img_token in img_tokens:
-            img_token = torch.nn.functional.normalize(img_token, dim=-1)
-            score = torch.matmul(img_token, text_features.permute(1, 0)) / 0.07
-            scores += score
-        prob = torch.softmax(scores, dim=-1)
-        cls_label = prob[:, 0, 1].view(-1)
-        predict_map = prob[:, 1:, 1]
-        
-        b, l = predict_map.size()
-        h = w = int(math.sqrt(l))
-        predict_map = predict_map.reshape(b, 1, h, w)
-        
-        return cls_label, predict_map, img_tokens
         
     
     def detect_forward_memorybank(self, image, args):
@@ -249,26 +210,41 @@ class CLIP(nn.Module):
         return cls_label, predict_map
     
 
-    def forward(self, image, text):
-        image_features = self.encode_image(image)
-        if isinstance(image_features, (list, tuple)):
-            image_features = image_features[0]
+    def create_text_prompt(self, tokenizer):
+        self.normal_cls_prompt = f'without defect.'
+        self.anomaly_cls_prompt = f'with defect.'
 
-        text_features = self.encode_text(text)
-        if isinstance(text_features, (list, tuple)):
-            text_features = text_features[0]
+        # output: [[without defect.의 정수 ID 텐서], [with defect.의 정수 ID 텐서]]
+        # ex) without defect. → [355, 100, 235, 0, 0]
+        # Frozen Prompt (without defect / with defect)
+        self.state_prompt_tokens = tokenizer([self.normal_cls_prompt, self.anomaly_cls_prompt]).to(self.device)
 
-        # normalized features
-        image_features = image_features / image_features.norm(dim=1, keepdim=True)
-        text_features = text_features / text_features.norm(dim=1, keepdim=True)
+        # Learnable Prompt
+        self.state_prompt_embedding = nn.Parameter(torch.empty(1, self.args.prompt_len, self.token_embedding.weight.shape[-1]).to(self.device))
+        nn.init.normal_(self.state_prompt_embedding, std=0.01)
+        self.state_prompt_embedding.requires_grad_(True)
 
-        # cosine similarity as logits
-        logit_scale = self.logit_scale.exp()
-        logits_per_image = logit_scale * image_features @ text_features.t()
-        logits_per_text = logits_per_image.t()
+    def forward(self, image):
+        # Text feature
+        text_features = self.encode_text(self.state_prompt_tokens, self.state_prompt_embedding)
+        text_features = torch.nn.functional.normalize(text_features, dim=-1)
 
-        # shape = [global_batch_size, global_batch_size]
+        # Image feature
+        img_tokens = self.encode_image(image, self.args, use_aggregation=True)
 
-        return logits_per_image, logits_per_text
+        scores = 0
+        for img_token in img_tokens:
+            img_token = torch.nn.functional.normalize(img_token, dim=-1)
+            score = torch.matmul(img_token, text_features.permute(1, 0)) / 0.07
+            scores += score
+        prob = torch.softmax(scores, dim=-1)
+        cls_label = prob[:, 0, 1].view(-1)
+        predict_map = prob[:, 1:, 1]
+        
+        b, l = predict_map.size()
+        h = w = int(math.sqrt(l))
+        predict_map = predict_map.reshape(b, 1, h, w)
+        
+        return cls_label, predict_map, img_tokens
     
     
