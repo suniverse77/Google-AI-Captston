@@ -1,0 +1,7 @@
+metric,value
+image_auroc,0.6007
+image_f1,0.6735395189003437
+pixel_f1,0.07323121609031623
+region_f1,0.0
+pixel_auroc,0.8457409915343768
+pro_auroc,0.7748894549465922

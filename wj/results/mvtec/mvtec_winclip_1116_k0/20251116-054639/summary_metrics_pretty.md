@@ -1,0 +1,3 @@
+| Category | Image AUROC | Image F1 | Pixel F1 | Region F1 | Pixel AUROC | PRO AUROC | Latency (ms) | Latency Std (ms) | FPS | Throughput Samples Per Sec | Throughput Total Samples | Throughput Total Time Sec | Gpu Peak Reserved Bytes | Gpu Peak Reserved Bytes Std | Params Total | Params Trainable | FLOPs | VRAM Peak (GB) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| bottle | N/A | 1.0000 | 0.6418 | 0.0000 | 0.9667 | 0.8865 | 40.420 ms | 0.000 ms | 24.74 | 7.9691 | 1.0000 | 0.1255 | 570425344.0000 | 0.0000 | 208,377,345 | 208,377,345 | N/A | 0.503 GB |

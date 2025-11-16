@@ -1,0 +1,2 @@
+category,image_auroc,image_f1,pixel_f1,region_f1,pixel_auroc,pro_auroc,latency_ms_mean,latency_ms_std,fps,throughput_samples_per_sec,throughput_total_samples,throughput_total_time_sec,gpu_peak_reserved_bytes,gpu_peak_reserved_bytes_std,params_total,params_trainable,flops,vram_peak_bytes
+candle,N/A,1.0000,0.1176,0.0000,0.9584,0.8481,50.137 ms,0.000 ms,19.95,7.6819,1.0000,0.1302,570425344.0000,0.0000,"208,377,345","208,377,345",N/A,0.503 GB

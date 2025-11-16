@@ -1,0 +1,3 @@
+| Category | Image AUROC | Image F1 | Pixel F1 | Region F1 | Pixel AUROC | PRO AUROC | Latency (ms) | Latency Std (ms) | FPS | Throughput Samples Per Sec | Throughput Total Samples | Throughput Total Time Sec | Gpu Peak Reserved Bytes | Gpu Peak Reserved Bytes Std | Params Total | Params Trainable | FLOPs | VRAM Peak (GB) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| candle | N/A | 1.0000 | 0.1176 | 0.0000 | 0.9584 | 0.8481 | 50.137 ms | 0.000 ms | 19.95 | 7.6819 | 1.0000 | 0.1302 | 570425344.0000 | 0.0000 | 208,377,345 | 208,377,345 | N/A | 0.503 GB |

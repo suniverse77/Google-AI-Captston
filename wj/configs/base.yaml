@@ -1,0 +1,60 @@
+inherit_from: null
+
+experiment:
+  name: base_experiment
+  seed: 2025
+  output_root: results/mvtec
+  save_config_copy: true
+
+data:
+  dataset: mvtec
+  root: data/mvtec
+  categories: ["bottle"]
+  image_size: 224
+  batch_size: 1
+  num_workers: 4
+  pin_memory: true
+  transforms:
+    resize: 256
+    center_crop: 224
+    normalization:
+      mean: [0.48145466, 0.4578275, 0.40821073]
+      std: [0.26862954, 0.26130258, 0.27577711]
+
+model:
+  name: base_model
+  device: cuda
+  precision: fp16
+  checkpoint: null
+  prompt_template: default
+
+evaluation:
+  metrics:
+    compute_image_auroc: true
+    compute_pixel_auroc: true
+    compute_pro: true
+    pro:
+      max_fpr: 0.3
+      num_thresholds: 100
+  latency:
+    warmup_iters: 5
+    measure_iters: 20
+    repeat: 3
+
+visualization:
+  enable: true
+  num_examples: 8
+  cmap: plasma
+  save_heatmaps: true
+  save_overlay: true
+
+logging:
+  level: INFO
+  log_dir: results/logs
+  timestamp_format: "%Y-%m-%d_%H-%M"
+
+runtime:
+  deterministic: true
+  benchmark: false
+  gradient_accumulation: 1
+

@@ -1,0 +1,75 @@
+inherit_from: configs/base.yaml
+
+experiment:
+  name: visa_patchcore_1112
+  description: "PatchCore baseline on VisA"
+  output_root: results/visa/patchcore
+
+data:
+  dataset: visa
+  root: data/visa
+  split_type: 1cls
+  split_csv: data/visa/split_csv/1cls.csv
+  categories:
+    [
+      "candle",
+      "capsules",
+      "cashew",
+      "chewinggum",
+      "fryum",
+      "macaroni1",
+      "macaroni2",
+      "pcb1",
+      "pcb2",
+      "pcb3",
+      "pcb4",
+      "pipe_fryum",
+    ]
+  batch_size: 4  # ← 줄이면 한 번에 올리는 배치 수가 줄어 VRAM 피크가 감소합니다.
+  loader:
+    use_full_train: true  # ← false로 바꾸고 max_train_samples를 지정하면 메모리 뱅크가 작아집니다.
+  transforms:
+    resize: 366  # ← 입력 해상도를 줄이면 추출 피처 수가 감소해 VRAM 사용량이 줄어듭니다.
+    center_crop: 320
+    normalization:
+      mean: [0.485, 0.456, 0.406]
+      std: [0.229, 0.224, 0.225]
+
+model:
+  name: patchcore
+  device: cuda
+  backbone: wideresnet50
+  layers: ["layer2", "layer3"]
+  input_size: [3, 320, 320]
+  pretrain_embed_dim: 1024
+  target_embed_dim: 1024
+  prompt_template: null
+  patch:
+    size: 3
+    stride: 1
+  nn:
+    k: 1
+    faiss_on_gpu: false  # ← true로 두면 FAISS가 GPU에 올라가고, false면 CPU 메모리를 사용합니다.
+    num_workers: 8
+  sampler:
+    name: approx_greedy_coreset
+    ratio: 0.1  # ← 값을 줄이면 메모리 뱅크에 저장하는 샘플 수가 줄어 VRAM 사용량이 감소합니다.
+  score_map:
+    normalize: true
+  # pretrained:
+  #   root: git_clone/patchcore-inspection/models/IM224_WR50_L2-3_P01_D1024-1024_PS-3_AN-1
+  #   prepend: ""
+  #   strict: true
+
+evaluation:
+  metrics:
+    pro:
+      max_fpr: 0.3
+      num_thresholds: 200
+
+visualization:
+  num_examples: 12
+  cmap: inferno
+  save_overlay: true
+  overlay_alpha: 0.5
+

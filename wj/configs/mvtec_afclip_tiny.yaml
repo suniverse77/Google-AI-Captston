@@ -1,0 +1,70 @@
+inherit_from: configs/base.yaml
+
+experiment:
+  name: mvtec_afclip_tiny
+  description: "AF-CLIP TINY baseline on MVTec-AD"
+  output_root: results/mvtec/afclip_tiny
+
+data:
+  dataset: mvtec_afclip
+  root: data
+  categories:
+    [
+      "bottle",
+      "cable",
+      "capsule",
+      "carpet",
+      "grid",
+      "hazelnut",
+      "leather",
+      "metal_nut",
+      "pill",
+      "screw",
+      "tile",
+      "toothbrush",
+      "transistor",
+      "wood",
+      "zipper",
+    ]
+  batch_size: 8
+  num_workers: 4
+  pin_memory: true
+  image_size: 518
+  loader:
+    fewshot: 0
+    seed: 122
+
+model:
+  name: afclip_tiny
+  device: cuda
+  clip_weight: git_clone/AF-CLIP_tiny/weight/vit-8m_text-3m_manual/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M.pt
+  prompt_len: 12
+  feature_layers: [6, 12, 18, 24]
+  memory_layers: [6, 12, 18, 24]
+  alpha: 0.1
+  fewshot: 0
+  img_size: 518
+  interpolate_to_input: true
+  gaussian_blur:
+    enabled: false
+    kernel_size: 5
+    sigma: 4.0
+  weight:
+    dir: git_clone/AF-CLIP_tiny/weight/vit-8m_text-3m_manual
+    dataset: mvtec
+    strict: false
+
+evaluation:
+  metrics:
+    thresholds:
+      image: 100
+      pixel: 200
+    pro:
+      max_fpr: 0.3
+      num_thresholds: 200
+
+visualization:
+  num_examples: 8
+  save_overlay: true
+  overlay_alpha: 0.5
+
