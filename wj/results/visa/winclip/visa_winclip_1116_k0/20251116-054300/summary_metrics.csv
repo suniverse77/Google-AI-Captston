@@ -1,2 +1,0 @@
-category,image_auroc,image_f1,pixel_f1,region_f1,pixel_auroc,pro_auroc,latency_ms_mean,latency_ms_std,fps,throughput_samples_per_sec,throughput_total_samples,throughput_total_time_sec,gpu_peak_reserved_bytes,gpu_peak_reserved_bytes_std,params_total,params_trainable,flops,vram_peak_bytes
-candle,nan,1.0,0.1176470588235294,0.0,0.9583869372205046,0.8481334952906195,50.13670349121094,0.0,19.94546769863523,7.6818984305856794,1.0,0.13017615489661694,570425344.0,0.0,208377345.0,208377345.0,nan,540057600.0
