@@ -1,0 +1,50 @@
+[main.py][line:62][INFO] --------args----------
+[main.py][line:64][INFO] clip_weight: ./weight/TinyCLIP-ViT-8M-16-Text-3M-YFCC15M.pt
+[main.py][line:64][INFO] weight_path: ./weight
+[main.py][line:64][INFO] data_dir: ./data
+[main.py][line:64][INFO] dataset: mvtec
+[main.py][line:64][INFO] dataset_list: ['mvtec', 'visa']
+[main.py][line:64][INFO] result_dir: ./results/1110
+[main.py][line:64][INFO] seed: 122
+[main.py][line:64][INFO] img_size: 518
+[main.py][line:64][INFO] batch_size: 8
+[main.py][line:64][INFO] lr: 0.0001
+[main.py][line:64][INFO] alpha: 0.1
+[main.py][line:64][INFO] epochs: 4
+[main.py][line:64][INFO] prompt_len: 12
+[main.py][line:64][INFO] lambda1: 1
+[main.py][line:64][INFO] lambda2: 1
+[main.py][line:64][INFO] category: None
+[main.py][line:64][INFO] fewshot: 0
+[main.py][line:64][INFO] suffix: defect
+[main.py][line:64][INFO] feature_layers: [6, 12, 18, 24]
+[main.py][line:64][INFO] test_dataset: []
+[main.py][line:64][INFO] vis: 0
+[main.py][line:64][INFO] vis_dir: ./vis_results/
+[main.py][line:65][INFO] --------args----------
+
+[main.py][line:250][INFO] ---------------------------visa------------------------------
+[utils.py][line:272][INFO] Category	Sample_CLS_AUROC	Sample_CLS_AP	Sample_CLS_max-F1	Pixel_AUROC	Pixel_AP	Pixel_max-F1	Pixel_PRO
+[utils.py][line:302][INFO] candle	0.691500	0.714385	0.697674	0.922629	0.020032	0.035528	0.745050
+[utils.py][line:302][INFO] capsules	0.384667	0.599907	0.769231	0.780035	0.010244	0.020280	0.383611
+[utils.py][line:302][INFO] cashew	0.670400	0.824045	0.806584	0.901671	0.117285	0.170077	0.812767
+[utils.py][line:302][INFO] chewinggum	0.894200	0.949804	0.873786	0.983154	0.407496	0.462718	0.765545
+[utils.py][line:302][INFO] fryum	0.640200	0.818855	0.803213	0.951736	0.402321	0.429746	0.849120
+[utils.py][line:302][INFO] macaroni1	0.736100	0.706610	0.743083	0.961244	0.013503	0.047746	0.876673
+[utils.py][line:302][INFO] macaroni2	0.619600	0.601094	0.676157	0.953039	0.004846	0.020132	0.808992
+[utils.py][line:302][INFO] pcb1	0.480000	0.526850	0.666667	0.901739	0.062913	0.118929	0.702676
+[utils.py][line:302][INFO] pcb2	0.602000	0.592861	0.708487	0.879424	0.037328	0.109378	0.657268
+[utils.py][line:302][INFO] pcb3	0.537129	0.546901	0.664452	0.869331	0.043675	0.075553	0.580450
+[utils.py][line:302][INFO] pcb4	0.509406	0.515835	0.671186	0.908062	0.077963	0.140189	0.689245
+[utils.py][line:302][INFO] pipe_fryum	0.882600	0.941080	0.880383	0.973436	0.331713	0.420197	0.895045
+[utils.py][line:311][INFO] =============================================================
+[utils.py][line:312][INFO] Average	0.637317	0.694852	0.746742	0.915458	0.127443	0.170873	0.730537
+[utils.py][line:313][INFO] =============================================================
+[main.py][line:252][INFO] -------------------------------------------------------------
+.702676 
+[utils.py][line:293][INFO] Category pcb2: Sample_CLS_AUROC: 0.602000 Sample_CLS_AP: 0.592861 Sample_CLS_max-F1: 0.708487 Pixel_AUROC: 0.879424 Pixel_AP: 0.037328 Pixel_max-F1: 0.109378 Pixel_PRO: 0.657268 
+[utils.py][line:293][INFO] Category pcb3: Sample_CLS_AUROC: 0.537129 Sample_CLS_AP: 0.546901 Sample_CLS_max-F1: 0.664452 Pixel_AUROC: 0.869331 Pixel_AP: 0.043675 Pixel_max-F1: 0.075553 Pixel_PRO: 0.580450 
+[utils.py][line:293][INFO] Category pcb4: Sample_CLS_AUROC: 0.509406 Sample_CLS_AP: 0.515835 Sample_CLS_max-F1: 0.671186 Pixel_AUROC: 0.908062 Pixel_AP: 0.077963 Pixel_max-F1: 0.140189 Pixel_PRO: 0.689245 
+[utils.py][line:293][INFO] Category pipe_fryum: Sample_CLS_AUROC: 0.882600 Sample_CLS_AP: 0.941080 Sample_CLS_max-F1: 0.880383 Pixel_AUROC: 0.973436 Pixel_AP: 0.331713 Pixel_max-F1: 0.420197 Pixel_PRO: 0.895045 
+[utils.py][line:297][INFO] Average: Sample_CLS_AUROC: 0.637317 Sample_CLS_AP: 0.694852 Sample_CLS_max-F1: 0.746742 Pixel_AUROC: 0.915458 Pixel_AP: 0.127443 Pixel_max-F1: 0.170873 Pixel_PRO: 0.730537 
+[main.py][line:252][INFO] -------------------------------------------------------------

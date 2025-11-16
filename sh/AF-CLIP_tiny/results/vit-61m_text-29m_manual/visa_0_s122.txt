@@ -1,0 +1,25 @@
+[main.py][line:62][INFO] --------args----------
+[main.py][line:64][INFO] clip_weight: ./weight/vit-61m_text-29m_manual/TinyCLIP-ViT-61M-32-Text-29M-LAION400M.pt
+[main.py][line:64][INFO] weight_path: None
+[main.py][line:64][INFO] data_dir: ./data
+[main.py][line:64][INFO] dataset: visa
+[main.py][line:64][INFO] dataset_list: ['mvtec', 'visa']
+[main.py][line:64][INFO] result_dir: ./results/vit-61m_text-29m_manual
+[main.py][line:64][INFO] seed: 122
+[main.py][line:64][INFO] img_size: 518
+[main.py][line:64][INFO] batch_size: 8
+[main.py][line:64][INFO] lr: 0.0001
+[main.py][line:64][INFO] alpha: 0.1
+[main.py][line:64][INFO] epochs: 4
+[main.py][line:64][INFO] prompt_len: 12
+[main.py][line:64][INFO] lambda1: 1
+[main.py][line:64][INFO] lambda2: 1
+[main.py][line:64][INFO] category: None
+[main.py][line:64][INFO] fewshot: 0
+[main.py][line:64][INFO] suffix: defect
+[main.py][line:64][INFO] feature_layers: [6, 12, 18, 24]
+[main.py][line:64][INFO] test_dataset: []
+[main.py][line:64][INFO] vis: 0
+[main.py][line:64][INFO] vis_dir: ./vis_results/
+[main.py][line:65][INFO] --------args----------
+
