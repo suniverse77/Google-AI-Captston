@@ -1,0 +1,94 @@
+experiment:
+  name: mvtec_winclip_1116_k0
+  seed: 2025
+  output_root: /home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/results/mvtec/winclip
+  save_config_copy: true
+  description: WinCLIP baseline on MVTec-AD
+data:
+  dataset: mvtec
+  root: /home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/data/mvtec
+  categories:
+  - bottle
+  - cable
+  - capsule
+  - carpet
+  - grid
+  - hazelnut
+  - leather
+  - metal_nut
+  - pill
+  - screw
+  - tile
+  - toothbrush
+  - transistor
+  - wood
+  - zipper
+  image_size: 224
+  batch_size: 4
+  num_workers: 4
+  pin_memory: true
+  transforms:
+    resize: 256
+    center_crop: 224
+    normalization:
+      mean:
+      - 0.48145466
+      - 0.4578275
+      - 0.40821073
+      std:
+      - 0.26862954
+      - 0.26130258
+      - 0.27577711
+  loader:
+    train_split: train
+    test_split: test
+    mask_suffix: _mask.png
+    k_shot: 0
+model:
+  name: winclip
+  device: cuda
+  precision: fp32
+  checkpoint: null
+  prompt_template: winclip_default
+  backbone: ViT-B-16-plus-240
+  pretrained_dataset: laion400m_e32
+  scales:
+  - 2
+  - 3
+  img_resize: 240
+  img_cropsize: 240
+  resolution: 400
+  k_shot: 0
+  normalize_score_maps: true
+evaluation:
+  metrics:
+    compute_image_auroc: true
+    compute_pixel_auroc: true
+    compute_pro: true
+    pro:
+      max_fpr: 0.3
+      num_thresholds: 200
+    thresholds:
+      image: 100
+      pixel: 200
+  latency:
+    warmup_iters: 1000
+    measure_iters: 1000
+    repeat: 1
+    throughput_num_passes: 1000
+    gpu_memory_num_iters: 1000
+visualization:
+  enable: true
+  num_examples: 12
+  cmap: jet
+  save_heatmaps: true
+  save_overlay: true
+  overlay_alpha: 0.5
+logging:
+  level: INFO
+  log_dir: /home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/results/mvtec/winclip/logs
+  timestamp_format: '%Y-%m-%d_%H-%M'
+runtime:
+  deterministic: true
+  benchmark: false
+  gradient_accumulation: 1

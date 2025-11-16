@@ -1,0 +1,242 @@
+2025-11-16 14:05:10,013 | INFO | winclip | Experiment dir: /home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/results/mvtec/afclip/mvtec_afclip/20251116-140510
+2025-11-16 14:05:10,013 | INFO | winclip | === Category: bottle ===
+2025-11-16 14:05:13,875 | ERROR | winclip | Category bottle 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:13,876 | INFO | winclip | === Category: cable ===
+2025-11-16 14:05:17,216 | ERROR | winclip | Category cable 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:17,216 | INFO | winclip | === Category: capsule ===
+2025-11-16 14:05:20,493 | ERROR | winclip | Category capsule 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:20,535 | INFO | winclip | === Category: carpet ===
+2025-11-16 14:05:23,862 | ERROR | winclip | Category carpet 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:23,864 | INFO | winclip | === Category: grid ===
+2025-11-16 14:05:27,114 | ERROR | winclip | Category grid 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:27,156 | INFO | winclip | === Category: hazelnut ===
+2025-11-16 14:05:30,480 | ERROR | winclip | Category hazelnut 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:30,481 | INFO | winclip | === Category: leather ===
+2025-11-16 14:05:33,701 | ERROR | winclip | Category leather 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:33,738 | INFO | winclip | === Category: metal_nut ===
+2025-11-16 14:05:36,957 | ERROR | winclip | Category metal_nut 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:37,000 | INFO | winclip | === Category: pill ===
+2025-11-16 14:05:40,329 | ERROR | winclip | Category pill 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:40,331 | INFO | winclip | === Category: screw ===
+2025-11-16 14:05:43,558 | ERROR | winclip | Category screw 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:43,596 | INFO | winclip | === Category: tile ===
+2025-11-16 14:05:46,834 | ERROR | winclip | Category tile 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:46,872 | INFO | winclip | === Category: toothbrush ===
+2025-11-16 14:05:50,103 | ERROR | winclip | Category toothbrush 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:50,142 | INFO | winclip | === Category: transistor ===
+2025-11-16 14:05:53,379 | ERROR | winclip | Category transistor 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:53,422 | INFO | winclip | === Category: wood ===
+2025-11-16 14:05:56,752 | ERROR | winclip | Category wood 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:05:56,753 | INFO | winclip | === Category: zipper ===
+2025-11-16 14:05:59,969 | ERROR | winclip | Category zipper 실행 중 오류: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+Traceback (most recent call last):
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 287, in run
+    metrics = run_category(cfg, category=category, output_root=experiment_dir, logger=logger)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/main.py", line 113, in run_category
+    model = build_method(model_cfg, device=cfg["model"].get("device"))
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/base.py", line 73, in build_method
+    model.setup()
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 131, in setup
+    self._load_pretrained_weights(clip_model)
+  File "/home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/src/methods/afclip.py", line 199, in _load_pretrained_weights
+    model.state_prompt_embedding = prompt_tensor.to(self.device)
+  File "/home/cvml/anaconda3/envs/miniclip/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1968, in __setattr__
+    raise TypeError(
+TypeError: cannot assign 'torch.cuda.FloatTensor' as parameter 'state_prompt_embedding' (torch.nn.Parameter or None expected)
+2025-11-16 14:06:00,006 | INFO | winclip | 완료. 결과는 /home/cvml/data/nwj/miniCLIP/Google-AI-Captston/wj/results/mvtec/afclip/mvtec_afclip/20251116-140510 에 저장되었습니다.

@@ -1,0 +1,73 @@
+inherit_from: configs/base.yaml
+
+experiment:
+  name: mvtec_winclip_1116_k0
+  description: "WinCLIP baseline on MVTec-AD"
+  output_root: results/mvtec/winclip
+
+data:
+  categories:
+    [
+      "bottle",
+      "cable",
+      "capsule",
+      "carpet",
+      "grid",
+      "hazelnut",
+      "leather",
+      "metal_nut",
+      "pill",
+      "screw",
+      "tile",
+      "toothbrush",
+      "transistor",
+      "wood",
+      "zipper",
+    ]
+  loader:
+    train_split: train
+    test_split: test
+    mask_suffix: "_mask.png"
+    k_shot: 0
+    #test_file_numbers: [19]  # 파일 번호 002
+    #test_defect_types: ["crack"]  # broken_small 클래스만 선택 
+  batch_size: 4
+
+model:
+  name: winclip
+  device: cuda
+  backbone: ViT-B-16-plus-240
+  pretrained_dataset: laion400m_e32
+  scales: [2, 3]
+  precision: fp32 # fp16, AF-CLIP_tiny 모델이 fp32임
+  img_resize: 240
+  img_cropsize: 240
+  resolution: 400
+  k_shot: 0
+  prompt_template: winclip_default
+  normalize_score_maps: true
+
+evaluation:
+  metrics:
+    thresholds:
+      image: 100
+      pixel: 200
+    pro:
+      max_fpr: 0.3
+      num_thresholds: 200
+  latency:
+    warmup_iters: 1000
+    measure_iters: 1000
+    repeat: 1
+    throughput_num_passes: 1000  # Throughput 측정 횟수 (기본값: 1000)
+    gpu_memory_num_iters: 1000  # GPU 메모리 측정 횟수 (기본값: 1000)
+
+visualization:
+  num_examples: 12
+  cmap: jet
+  save_overlay: true
+  overlay_alpha: 0.5
+
+logging:
+  log_dir: results/mvtec/winclip/logs
+

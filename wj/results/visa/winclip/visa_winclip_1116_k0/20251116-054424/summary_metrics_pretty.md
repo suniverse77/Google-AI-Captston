@@ -1,0 +1,3 @@
+| Category | Image AUROC | Image F1 | Pixel F1 | Region F1 | Pixel AUROC | PRO AUROC | Latency (ms) | Latency Std (ms) | FPS | Throughput Samples Per Sec | Throughput Total Samples | Throughput Total Time Sec | Gpu Peak Reserved Bytes | Gpu Peak Reserved Bytes Std | Params Total | Params Trainable | FLOPs | VRAM Peak (GB) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| pcb2 | N/A | 1.0000 | 0.0802 | 0.0000 | 0.8952 | 0.6647 | 43.638 ms | 0.000 ms | 22.92 | 7.8740 | 1.0000 | 0.1270 | 570425344.0000 | 0.0000 | 208,377,345 | 208,377,345 | N/A | 0.503 GB |
